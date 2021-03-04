@@ -1,14 +1,16 @@
 package amaralus.apps.businesappdemo.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Alpha {
 
     private String code;
-    private List<AlphaVersion> versions;
+    private AlphaVersion version;
 }

@@ -1,6 +1,8 @@
 package amaralus.apps.businesappdemo.datasource.models;
 
 import lombok.*;
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -13,6 +15,9 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Where(clause = "deleted=false")
+@SQLDelete(sql = "update alpha_version set deleted=true, modified_date=now(), row_version=row_version+1 where version_id=?")
+@Loader(namedQuery = "loadAlphaVersionById")
+@NamedQuery(name = "loadAlphaVersionById", query = "select a from AlphaVersionModel a where a.versionId=?1 and a.deleted=false")
 public class AlphaVersionModel extends AbstractModel {
 
     @Id
