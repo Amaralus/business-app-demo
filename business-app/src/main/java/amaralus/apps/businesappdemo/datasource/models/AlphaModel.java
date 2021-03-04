@@ -22,7 +22,7 @@ import static javax.persistence.FetchType.EAGER;
 @SQLDelete(sql = "update alpha set deleted=true, modified_date=now(), row_version=row_version+1 where alpha_code=?")
 @Loader(namedQuery = "loadAlphaById")
 @NamedQuery(name = "loadAlphaById", query = "select a from AlphaModel a where a.alphaCode=?1 and a.deleted=false")
-public class AlphaModel extends AbstractModel {
+public class AlphaModel extends AbstractModel<String> {
 
     @Id
     @Column(name = "alpha_code", unique = true, nullable = false)
@@ -33,4 +33,14 @@ public class AlphaModel extends AbstractModel {
     @OneToMany(mappedBy = "alphaModel", cascade = ALL, fetch = EAGER, orphanRemoval = true)
     @OrderBy("versionValue desc")
     List<AlphaVersionModel> alphaVersionModels;
+
+    @Override
+    public String getId() {
+        return alphaCode;
+    }
+
+    @Override
+    public void setId(String id) {
+        alphaCode = id;
+    }
 }

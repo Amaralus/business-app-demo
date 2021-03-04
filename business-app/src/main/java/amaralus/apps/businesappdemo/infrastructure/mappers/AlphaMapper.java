@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.mappers;
 
+import amaralus.apps.businesappdemo.datasource.IdGenerator;
 import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.datasource.models.AlphaVersionModel;
 import amaralus.apps.businesappdemo.entities.Alpha;
@@ -10,12 +11,13 @@ import org.mapstruct.Mapping;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
 @Mapper(componentModel = "spring")
 public interface AlphaMapper {
+
+    IdGenerator idGenerator = new IdGenerator();
 
     @Mapping(target = "code", source = "alphaCode")
     @Mapping(target = "version", source = "alphaVersionModels")
@@ -50,10 +52,7 @@ public interface AlphaMapper {
     default void afterMapping(AlphaModel alphaModel) {
         for (var versionModel : alphaModel.getAlphaVersionModels()) {
             versionModel.setAlphaCode(alphaModel.getAlphaCode());
-            versionModel.setVersionId(
-                    String.valueOf(Objects.hash(
-                            versionModel.getVersionValue(),
-                            versionModel.getAlphaCode())));
+            versionModel.setId(idGenerator.generate(versionModel));
         }
     }
 }
