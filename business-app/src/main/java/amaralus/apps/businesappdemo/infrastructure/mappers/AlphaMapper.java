@@ -53,9 +53,4 @@ public interface AlphaMapper {
             versionModel.setId(idGenerator.generate(versionModel));
         }
     }
-
-    @Mapping(target = "modifiedDate", ignore = true)
-    @Mapping(target = "rowVersion", ignore = true)
-    @Mapping(target = "alphaVersionModels", ignore = true)
-    void mergeModel(AlphaModel source, @MappingTarget AlphaModel target);
 }

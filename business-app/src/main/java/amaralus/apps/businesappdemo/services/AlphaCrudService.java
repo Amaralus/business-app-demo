@@ -4,6 +4,7 @@ import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.datasource.repositories.AlphaRepository;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.infrastructure.mappers.AlphaMapper;
+import amaralus.apps.businesappdemo.infrastructure.mappers.MergeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,12 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
 
     private final AlphaRepository alphaRepository;
     private final AlphaMapper mapper;
+    private final MergeMapper merger;
 
-    public AlphaCrudService(AlphaRepository alphaRepository, AlphaMapper mapper) {
+    public AlphaCrudService(AlphaRepository alphaRepository, AlphaMapper mapper, MergeMapper merger) {
         this.alphaRepository = alphaRepository;
         this.mapper = mapper;
+        this.merger = merger;
     }
 
     @Transactional
@@ -30,11 +33,18 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
 
     private AlphaModel softSave(AlphaModel alphaModel){
         var founded = alphaRepository.getByIdIgnoreDeleted(alphaModel.getId());
+        log.info("found ignore deleted");
         if (founded != null ) {
-            mapper.mergeModel(alphaModel, founded);
-            return alphaRepository.save(founded);
+            log.info("preUpdate");
+            merger.merge(alphaModel, founded);
+            var saved = alphaRepository.save(founded);
+            log.info("postUpdate");
+            return saved;
         } else {
-            return alphaRepository.save(alphaModel);
+            log.info("preInsert");
+            var saved = alphaRepository.save(alphaModel);
+            log.info("postInsert");
+            return saved;
         }
     }
 

@@ -10,10 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-
 import static amaralus.apps.businesappdemo.TestUtil.alpha;
-import static amaralus.apps.businesappdemo.TestUtil.alphaVersion;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -21,18 +18,13 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @TestPropertySource("classpath:persistence-db.properties")
 @TestInstance(PER_CLASS)
 @Slf4j
-@DisplayName("Тесты AlphaCrudService")
+@DisplayName("Тесты для сущности Alpha")
 class AlphaModelsCrudTest {
-
-    @Autowired
-    EntityManager entityManager;
 
     @Autowired
     AlphaCrudService alphaCrudService;
     @Autowired
     AlphaRepository alphaRepository;
-
-    // Alpha only
 
     @Test
     @DisplayName("Сохранение Alpha | В базе пусто")
@@ -47,7 +39,7 @@ class AlphaModelsCrudTest {
     }
 
     @Test
-    @DisplayName("Обновление Alpha | В базе есть запись")
+    @DisplayName("Сохранение Alpha | В базе есть запись")
     @Transactional
     void updateAlpha() {
         var alpha = alpha();
@@ -144,19 +136,5 @@ class AlphaModelsCrudTest {
         var result = alphaCrudService.getById(alpha.getCode());
 
         assertNull(result);
-    }
-
-    // Alpha And AlphaVersion
-
-    @Test
-    @DisplayName("Сохранение Alpha и AlphaVersion | В базе пусто")
-    @Transactional
-    void saveAlphaWithVersion() {
-        var alpha = alpha("code1", alphaVersion());
-
-        var result = alphaCrudService.save(alpha);
-
-        assertEquals(alpha, result);
-        assertTrue(alphaRepository.existsById(alpha.getCode()));
     }
 }
