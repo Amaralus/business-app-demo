@@ -75,7 +75,6 @@ class AlphaModelsCrudTest {
         alphaCrudService.save(alpha);
         alphaCrudService.delete(alpha.getCode());
 
-        assertTrue(alphaRepository.existsById(alpha.getCode()));
         var alphaModel = alphaRepository.getByIdIgnoreDeleted(alpha.getCode());
         assertTrue(alphaModel.isDeleted());
     }

@@ -26,25 +26,20 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
 
     @Transactional
     @Override
-    public Alpha save(Alpha entity) {
-        var model = mapper.alphaToModel(entity);
-        return mapper.modelToAlpha(softSave(model));
+    public Alpha save(Alpha alpha) {
+        log.info("save alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
+        var model = mapper.alphaToModel(alpha);
+        var result = softSave(model);
+        return mapper.modelToAlpha(result);
     }
 
     private AlphaModel softSave(AlphaModel alphaModel){
         var founded = alphaRepository.getByIdIgnoreDeleted(alphaModel.getId());
-        log.info("found ignore deleted");
         if (founded != null ) {
-            log.info("preUpdate");
             merger.merge(alphaModel, founded);
-            var saved = alphaRepository.save(founded);
-            log.info("postUpdate");
-            return saved;
+            return alphaRepository.save(founded);
         } else {
-            log.info("preInsert");
-            var saved = alphaRepository.save(alphaModel);
-            log.info("postInsert");
-            return saved;
+            return alphaRepository.save(alphaModel);
         }
     }
 

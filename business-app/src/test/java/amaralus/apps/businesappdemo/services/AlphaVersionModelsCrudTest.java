@@ -13,7 +13,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.HashSet;
 
 import static amaralus.apps.businesappdemo.TestUtil.alpha;
 import static amaralus.apps.businesappdemo.TestUtil.alphaVersion;
@@ -46,23 +45,14 @@ class AlphaVersionModelsCrudTest {
         var result = alphaCrudService.save(alpha);
 
         assertEquals(alpha, result);
-        assertTrue(alphaRepository.existsById(alpha.getCode()));
-
-        var versions = entityManager.createQuery("select v from AlphaVersionModel v where v.alphaCode=:code and v.deleted=false ",
-                AlphaVersionModel.class)
-                .setParameter("code", alpha.getCode())
-                .getResultList();
-        assertNotNull(versions);
-        assertEquals(1, versions.size());
+        var version = getByCodeAndVersion(alpha.getCode(), alpha.getVersion().getVersionValue());
+        assertNotNull(version);
     }
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть записи")
     @Transactional
     void saveVersionUpdate() {
-
-        var set = new HashSet<>();
-
         var alpha = alpha("code1", alphaVersion());
 
         alphaCrudService.save(alpha);
@@ -71,10 +61,76 @@ class AlphaVersionModelsCrudTest {
         var result = alphaCrudService.save(alpha);
 
         assertEquals(alpha, result);
-        assertTrue(alphaRepository.existsById(alpha.getCode()));
+        var version = getByCodeAndVersion(alpha.getCode(), alpha.getVersion().getVersionValue());
+        assertNotNull(version);
     }
 
-    // сохранение в базе обе записи удалены
-    // сохранение в базе есть альфа с другой версией (перезатирание?)
-    // сохранение в базе есть альфа с другой версией (добавление?)
+    @Test
+    @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть удаленные записи")
+    @Transactional
+    void saveVersionRestoreDeleted() {
+        var alpha = alpha("code1", alphaVersion());
+
+        alphaCrudService.save(alpha);
+        alphaCrudService.delete(alpha.getCode());
+        var result = alphaCrudService.save(alpha);
+
+        assertEquals(alpha, result);
+        var version = getByCodeAndVersion(alpha.getCode(), alpha.getVersion().getVersionValue());
+        assertNotNull(version);
+        assertFalse(version.isDeleted());
+    }
+
+    @Test
+    @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть другие записи")
+    @Transactional
+    void saveVersionContainsOtherVersion() {
+        var alpha = alpha("code1", alphaVersion());
+
+        alphaCrudService.save(alpha);
+        alpha.setVersion(alphaVersion("0.2"));
+        var result = alphaCrudService.save(alpha);
+
+        assertEquals(alpha, result);
+        var model = alphaRepository.findById(alpha.getCode());
+        assertTrue(model.isPresent());
+        assertFalse(model.get().getAlphaVersionModels().isEmpty());
+        assertEquals(2, model.get().getAlphaVersionModels().size());
+    }
+
+    @Test
+    @DisplayName("Удаление Alpha и AlphaVersion | В базе есть записи")
+    @Transactional
+    void delete() {
+        var alpha = alpha("code1", alphaVersion());
+
+        alphaCrudService.save(alpha);
+        alphaCrudService.delete(alpha.getCode());
+
+        var version = getByCodeAndVersion(alpha.getCode(), alpha.getVersion().getVersionValue());
+        assertNotNull(version);
+        assertTrue(version.isDeleted());
+    }
+
+    @Test
+    @DisplayName("Получение Alpha и AlphaVersion | В базе несколько версий")
+    @Transactional
+    void getSeveralVersion() {
+        var alpha = alpha("code1", alphaVersion());
+
+        alphaCrudService.save(alpha);
+        alpha.setVersion(alphaVersion("0.2"));
+        alphaCrudService.save(alpha);
+
+        var result = alphaCrudService.getById(alpha.getCode());
+        assertEquals(alpha, result);
+    }
+
+    private AlphaVersionModel getByCodeAndVersion(String code, String version) {
+        return entityManager.createQuery("select v from AlphaVersionModel v where v.alphaCode=:code and v.versionValue=:version",
+                AlphaVersionModel.class)
+                .setParameter("code", code)
+                .setParameter("version", version)
+                .getSingleResult();
+    }
 }
