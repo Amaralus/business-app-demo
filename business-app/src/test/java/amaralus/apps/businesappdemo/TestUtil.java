@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo;
 
+import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.entities.AlphaVersion;
 
@@ -7,6 +8,10 @@ public final class TestUtil {
 
     private TestUtil() {
         throw new AssertionError();
+    }
+
+    public static Alpha alpha() {
+        return alpha("code1");
     }
 
     public static Alpha alpha(String code) {
@@ -27,6 +32,20 @@ public final class TestUtil {
                 .updateField(updateField)
                 .version(alphaVersion)
                 .build();
+    }
+
+    public static AlphaModel alphaModel() {
+        return alphaModel("code1");
+    }
+
+    public static AlphaModel alphaModel(String code) {
+        return AlphaModel.builder()
+                .alphaCode(code)
+                .build();
+    }
+
+    public static AlphaVersion alphaVersion() {
+        return alphaVersion("0.1");
     }
 
     public static AlphaVersion alphaVersion(String version) {

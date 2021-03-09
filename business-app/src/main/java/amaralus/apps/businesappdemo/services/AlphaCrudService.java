@@ -5,6 +5,7 @@ import amaralus.apps.businesappdemo.datasource.repositories.AlphaRepository;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.infrastructure.mappers.AlphaMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,10 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Transactional
     @Override
     public void delete(String id) {
-        alphaRepository.deleteById(id);
+        try {
+            alphaRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException ignored) {
+            log.warn("alpha for deletion with id=[{}] not found", id);
+        }
     }
 }
