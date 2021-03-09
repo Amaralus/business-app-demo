@@ -2,6 +2,7 @@ package amaralus.apps.businesappdemo.datasource.models;
 
 import lombok.Data;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public abstract class AbstractModel<I extends Serializable> {
 
-
     @Column(name = "modified_date")
-    private LocalDateTime modifiedDate;
+    @UpdateTimestamp
+    private LocalDateTime modifiedDate = LocalDateTime.now();
     @Column(name = "row_version")
     private Long rowVersion = 1L;
     @Column

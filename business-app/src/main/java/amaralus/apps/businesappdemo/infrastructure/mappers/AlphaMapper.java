@@ -5,16 +5,14 @@ import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.datasource.models.AlphaVersionModel;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.entities.AlphaVersion;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface AlphaMapper {
 
     IdGenerator idGenerator = new IdGenerator();
@@ -49,10 +47,15 @@ public interface AlphaMapper {
     }
 
     @AfterMapping
-    default void afterMapping(AlphaModel alphaModel) {
+    default void alphaModelAfterMapping(@MappingTarget AlphaModel alphaModel) {
         for (var versionModel : alphaModel.getAlphaVersionModels()) {
             versionModel.setAlphaCode(alphaModel.getAlphaCode());
             versionModel.setId(idGenerator.generate(versionModel));
         }
     }
+
+    @Mapping(target = "modifiedDate", ignore = true)
+    @Mapping(target = "rowVersion", ignore = true)
+    @Mapping(target = "alphaVersionModels", ignore = true)
+    void mergeModel(AlphaModel source, @MappingTarget AlphaModel target);
 }

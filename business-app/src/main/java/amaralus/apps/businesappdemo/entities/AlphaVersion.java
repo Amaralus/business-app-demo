@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AlphaVersion {
     private String versionValue;
+    private String updateField;
 }

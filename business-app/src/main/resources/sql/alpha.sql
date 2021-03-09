@@ -1,6 +1,7 @@
 create table if not exists sandbox.business_app.alpha
 (
     alpha_code    varchar(128) not null,
+    update_field  varchar(256),
     modified_date timestamp    not null default now(),
     row_version   bigint       not null default 1,
     deleted       varchar(1)   not null default 'N',

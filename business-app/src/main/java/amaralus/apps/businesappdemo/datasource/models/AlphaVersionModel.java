@@ -3,7 +3,6 @@ package amaralus.apps.businesappdemo.datasource.models;
 import lombok.*;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -15,9 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Builder
-@Where(clause = "deleted=false")
-@SQLDelete(sql = "update alpha_version set deleted=true, modified_date=now(), row_version=row_version+1 where version_id=?")
+//@Where(clause = "deleted='N'")
+@SQLDelete(sql = "update alpha_version set deleted='Y', modified_date=now(), row_version=row_version+1 where version_id=?")
 @Loader(namedQuery = "loadAlphaVersionById")
 @NamedQuery(name = "loadAlphaVersionById", query = "select a from AlphaVersionModel a where a.versionId=?1 and a.deleted=false")
 public class AlphaVersionModel extends AbstractModel<String> implements CompositeKey {
@@ -29,6 +29,8 @@ public class AlphaVersionModel extends AbstractModel<String> implements Composit
     private String versionValue;
     @Column(name = "alpha_code", nullable = false)
     private String alphaCode;
+    @Column(name = "update_field")
+    private String updateField;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
