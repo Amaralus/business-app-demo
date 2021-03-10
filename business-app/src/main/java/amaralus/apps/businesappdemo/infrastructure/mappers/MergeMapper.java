@@ -33,8 +33,6 @@ public interface MergeMapper {
 
         for (var sourceVersion : source)
             merge(sourceVersion, targetMap.get(sourceVersion.getId()));
-
-//        target.removeIf(AbstractModel::isDeleted);
     }
 
     @Named("versionsAddMapping")
@@ -47,6 +45,6 @@ public interface MergeMapper {
             else
                 target.add(sourceVersion);
 
-//        target.removeIf(AbstractModel::isDeleted);
+        target.removeIf(AbstractModel::isDeleted);
     }
 }

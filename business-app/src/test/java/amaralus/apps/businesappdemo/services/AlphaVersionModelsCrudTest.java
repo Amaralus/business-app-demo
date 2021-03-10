@@ -99,6 +99,27 @@ class AlphaVersionModelsCrudTest {
     }
 
     @Test
+    @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть другие удаленные записи")
+    @Transactional
+    void saveVersionContainsOtherDeletedVersion() {
+        var alpha = alpha("code1", alphaVersion());
+
+        alphaCrudService.save(alpha);
+        alphaCrudService.delete(alpha.getCode());
+        alpha.setVersion(alphaVersion("0.2"));
+        var result = alphaCrudService.save(alpha);
+
+        assertEquals(alpha, result);
+        var model = alphaRepository.findById(alpha.getCode());
+        assertTrue(model.isPresent());
+        var versions = model.get().getAlphaVersionModels();
+        assertFalse(versions.isEmpty());
+        assertEquals(1, versions.size());
+        assertEquals(alpha.getVersion().getVersionValue(), versions.get(0).getVersionValue());
+
+    }
+
+    @Test
     @DisplayName("Удаление Alpha и AlphaVersion | В базе есть записи")
     @Transactional
     void delete() {
