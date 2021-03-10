@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PreUpdate;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -21,6 +22,11 @@ public abstract class AbstractModel<I extends Serializable> {
     @Column
     @Type(type = "yes_no")
     private boolean deleted = false;
+
+    @PreUpdate
+    public void preUpdate() {
+        rowVersion++;
+    }
 
     public abstract I getId();
 

@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
-@SQLDelete(sql = "update alpha_version set deleted='Y', modified_date=now(), row_version=row_version+1 where version_id=?")
+@SQLDelete(sql = "update alpha_version set deleted='Y' where version_id=?")
 @Loader(namedQuery = "loadAlphaVersionById")
 @NamedQuery(name = "loadAlphaVersionById", query = "select a from AlphaVersionModel a where a.versionId=?1 and a.deleted=false")
 public class AlphaVersionModel extends AbstractModel<String> implements CompositeKey {

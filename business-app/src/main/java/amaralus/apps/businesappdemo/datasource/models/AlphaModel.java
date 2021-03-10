@@ -21,7 +21,7 @@ import static javax.persistence.FetchType.EAGER;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
-@SQLDelete(sql = "update alpha set deleted = 'Y', modified_date=now(), row_version=row_version+1 where alpha_code = ?")
+@SQLDelete(sql = "update alpha set deleted = 'Y' where alpha_code = ?")
 @Loader(namedQuery = "loadAlphaById")
 @NamedQuery(name = "loadAlphaById", query = "select a from AlphaModel a where a.alphaCode=?1 and a.deleted=false")
 public class AlphaModel extends AbstractModel<String> {
