@@ -53,6 +53,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Transactional
     @Override
     public void delete(String id) {
+        log.info("delete alpha id=[{}]", id);
         try {
             alphaRepository.deleteById(id);
         } catch (EmptyResultDataAccessException ignored) {

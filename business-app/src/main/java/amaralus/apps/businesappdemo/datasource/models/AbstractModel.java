@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -26,6 +27,10 @@ public abstract class AbstractModel<I extends Serializable> {
     @PreUpdate
     public void preUpdate() {
         rowVersion++;
+    }
+
+    public String getTableName() {
+        return this.getClass().getAnnotation(Table.class).name();
     }
 
     public abstract I getId();

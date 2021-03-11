@@ -41,7 +41,6 @@ public class AlphaModel extends AbstractModel<String> {
         return alphaVersionModels;
     }
 
-
     @Override
     public String getId() {
         return alphaCode;
