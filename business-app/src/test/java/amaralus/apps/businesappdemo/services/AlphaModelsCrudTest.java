@@ -1,7 +1,6 @@
 package amaralus.apps.businesappdemo.services;
 
 import amaralus.apps.businesappdemo.datasource.repositories.AlphaRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,7 +16,6 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @SpringBootTest
 @TestPropertySource("classpath:persistence-db.properties")
 @TestInstance(PER_CLASS)
-@Slf4j
 @DisplayName("Тесты для сущности Alpha")
 class AlphaModelsCrudTest {
 
