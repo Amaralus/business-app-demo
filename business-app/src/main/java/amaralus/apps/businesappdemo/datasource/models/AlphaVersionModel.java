@@ -8,6 +8,8 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
 @Table(name = "alpha_version")
 @Data
@@ -33,7 +35,7 @@ public class AlphaVersionModel extends AbstractModel<String> implements Composit
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "alpha_code", insertable = false, updatable = false, nullable = false,
             foreignKey = @ForeignKey(name = "fk_alphaversion_alphacode_alpha_alphacode"))
     private AlphaModel alphaModel;

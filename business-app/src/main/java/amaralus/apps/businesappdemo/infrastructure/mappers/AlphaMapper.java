@@ -3,12 +3,15 @@ package amaralus.apps.businesappdemo.infrastructure.mappers;
 import amaralus.apps.businesappdemo.datasource.IdGenerator;
 import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.datasource.models.AlphaVersionModel;
+import amaralus.apps.businesappdemo.datasource.models.ThetaModel;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.entities.AlphaVersion;
 import org.mapstruct.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -23,6 +26,7 @@ public interface AlphaMapper {
 
     @Mapping(source = "code", target = "alphaCode")
     @Mapping(source = "version", target = "alphaVersionModels")
+    @Mapping(target = "thetas", ignore = true)
     AlphaModel alphaToModel(Alpha alpha);
 
     AlphaVersion modelToAlphaVersion(AlphaVersionModel alphaVersionModel);
@@ -44,6 +48,12 @@ public interface AlphaMapper {
             return null;
 
         return modelToAlphaVersion(versionModelList.get(0));
+    }
+
+    default Set<String> thetaModelToString(Set<ThetaModel> thetaModels) {
+        return thetaModels.stream()
+                .map(ThetaModel::getThetaCode)
+                .collect(Collectors.toSet());
     }
 
     @AfterMapping

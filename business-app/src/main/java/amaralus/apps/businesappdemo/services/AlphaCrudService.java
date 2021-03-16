@@ -15,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlphaCrudService implements CrudService<Alpha, String> {
 
     private final AlphaRepository alphaRepository;
+    private final ThetaCrudService thetaCrudService;
     private final AlphaMapper mapper;
     private final MergeMapper merger;
 
-    public AlphaCrudService(AlphaRepository alphaRepository, AlphaMapper mapper, MergeMapper merger) {
+    public AlphaCrudService(AlphaRepository alphaRepository, ThetaCrudService thetaCrudService, AlphaMapper mapper, MergeMapper merger) {
         this.alphaRepository = alphaRepository;
+        this.thetaCrudService = thetaCrudService;
         this.mapper = mapper;
         this.merger = merger;
     }
@@ -29,6 +31,10 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     public Alpha save(Alpha alpha) {
         log.info("save alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
         var model = mapper.alphaToModel(alpha);
+
+        var thetas = thetaCrudService.save(alpha.getThetas());
+        model.setThetas(thetas);
+
         var result = softSave(model);
         return mapper.modelToAlpha(result);
     }

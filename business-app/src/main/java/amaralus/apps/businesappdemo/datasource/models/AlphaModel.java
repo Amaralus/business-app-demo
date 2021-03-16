@@ -1,14 +1,13 @@
 package amaralus.apps.businesappdemo.datasource.models;
 
+import amaralus.apps.businesappdemo.datasource.models.link.AlphaThetaLinkModel;
 import lombok.*;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
@@ -32,13 +31,32 @@ public class AlphaModel extends AbstractModel<String> {
     @Column(name = "update_field")
     private String updateField;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "alphaModel", cascade = ALL, fetch = EAGER)
     private List<AlphaVersionModel> alphaVersionModels = new ArrayList<>();
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "alphaModel", cascade = ALL, fetch = EAGER)
+    private Set<AlphaThetaLinkModel> thetaLinks = new HashSet<>();
 
     public List<AlphaVersionModel> getAlphaVersionModels() {
         alphaVersionModels = new ArrayList<>(alphaVersionModels);
         alphaVersionModels.sort(Collections.reverseOrder(Comparator.comparingDouble(version -> Double.parseDouble(version.getVersionValue()))));
         return alphaVersionModels;
+    }
+
+    public void setThetas(Set<ThetaModel> thetaModels) {
+        thetaLinks = thetaModels.stream()
+                .map(theta -> new AlphaThetaLinkModel(this, theta))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<ThetaModel> getThetas() {
+        return getThetaLinks().stream()
+                .map(AlphaThetaLinkModel::getThetaModel)
+                .collect(Collectors.toSet());
     }
 
     @Override
