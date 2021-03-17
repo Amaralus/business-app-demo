@@ -29,7 +29,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Transactional
     @Override
     public Alpha save(Alpha alpha) {
-        log.info("save alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
+        log.info("Сохранение Alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
         var model = mapper.alphaToModel(alpha);
 
         var thetas = thetaCrudService.save(alpha.getThetas());

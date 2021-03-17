@@ -24,6 +24,7 @@ class AlphaThetaLinkModelTest {
     AlphaCrudService alphaCrudService;
 
     @Test
+    @DisplayName("Сохранение Alpha и Theta | В базе пусто")
     @Transactional
     void save() {
         var alpha = alpha();
@@ -34,4 +35,22 @@ class AlphaThetaLinkModelTest {
 
         assertEquals(alpha, result);
     }
+
+    @Test
+    @DisplayName("Сохранение Alpha и Theta | В базе есть записи")
+    @Transactional
+    void replace() {
+        var alpha = alpha();
+        alpha.setThetas(Set.of("theta"));
+
+        alphaCrudService.save(alpha);
+        alpha.setThetas(Set.of("theta2"));
+        alphaCrudService.save(alpha);
+
+        var result = alphaCrudService.getById(alpha.getCode());
+
+        assertEquals(alpha, result);
+    }
+
+    // restore
 }

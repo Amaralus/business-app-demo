@@ -2,6 +2,7 @@ package amaralus.apps.businesappdemo.datasource.models;
 
 import amaralus.apps.businesappdemo.datasource.models.link.AlphaThetaLinkModel;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLDelete;
 
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.EAGER;
+import static org.hibernate.annotations.LazyCollectionOption.FALSE;
 
 @Entity
 @Table(name = "alpha")
@@ -33,13 +34,15 @@ public class AlphaModel extends AbstractModel<String> {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "alphaModel", cascade = ALL, fetch = EAGER)
+    @OneToMany(mappedBy = "alphaModel", cascade = ALL)
+    @LazyCollection(FALSE)
     private List<AlphaVersionModel> alphaVersionModels = new ArrayList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "alphaModel", cascade = ALL, fetch = EAGER)
-    private Set<AlphaThetaLinkModel> thetaLinks = new HashSet<>();
+    @OneToMany(mappedBy = "alphaModel", cascade = ALL)
+    @LazyCollection(FALSE)
+    private List<AlphaThetaLinkModel> thetaLinks = new ArrayList<>();
 
     public List<AlphaVersionModel> getAlphaVersionModels() {
         alphaVersionModels = new ArrayList<>(alphaVersionModels);
@@ -50,7 +53,7 @@ public class AlphaModel extends AbstractModel<String> {
     public void setThetas(Set<ThetaModel> thetaModels) {
         thetaLinks = thetaModels.stream()
                 .map(theta -> new AlphaThetaLinkModel(this, theta))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public Set<ThetaModel> getThetas() {

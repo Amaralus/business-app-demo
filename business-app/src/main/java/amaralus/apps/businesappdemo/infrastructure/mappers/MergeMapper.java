@@ -13,6 +13,8 @@ public interface MergeMapper {
 
     @Mapping(target = "modifiedDate", ignore = true)
     @Mapping(target = "rowVersion", ignore = true)
+    @Mapping(target = "thetaLinks", ignore = true)
+    @Mapping(target = "thetas", ignore = true)
     @Mapping(target = "alphaVersionModels", qualifiedByName = "versionsAddMapping")
     void merge(AlphaModel source, @MappingTarget AlphaModel target);
 
@@ -46,5 +48,10 @@ public interface MergeMapper {
                 target.add(sourceVersion);
 
         target.removeIf(AbstractModel::isDeleted);
+    }
+
+    @AfterMapping
+    default void afterAlphaModel(AlphaModel source, @MappingTarget AlphaModel target) {
+        target.setThetas(source.getThetas());
     }
 }

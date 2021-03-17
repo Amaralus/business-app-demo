@@ -41,12 +41,16 @@ public class AlphaThetaLinkModel extends AbstractModel<String> implements Compos
     @Type(type = "uuid-char")
     private UUID thetaId;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "alpha_code", insertable = false, updatable = false, nullable = false,
             foreignKey = @ForeignKey(name = "fk_alphathetalink_alphacode_alpha_alphacode"))
     private AlphaModel alphaModel;
 
-    @ManyToOne(fetch = LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne
     @JoinColumn(name = "theta_id", insertable = false, updatable = false, nullable = false,
             foreignKey = @ForeignKey(name = "fk_alphathetalink_thetaid_theta_thetaid"))
     private ThetaModel thetaModel;

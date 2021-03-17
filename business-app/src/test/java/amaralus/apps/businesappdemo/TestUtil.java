@@ -4,6 +4,8 @@ import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.entities.Alpha;
 import amaralus.apps.businesappdemo.entities.AlphaVersion;
 
+import java.util.HashSet;
+
 public final class TestUtil {
 
     private TestUtil() {
@@ -31,6 +33,7 @@ public final class TestUtil {
                 .code(code)
                 .updateField(updateField)
                 .version(alphaVersion)
+                .thetas(new HashSet<>())
                 .build();
     }
 

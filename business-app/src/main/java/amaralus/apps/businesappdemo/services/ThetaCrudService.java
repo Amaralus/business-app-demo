@@ -30,6 +30,7 @@ public class ThetaCrudService {
 
     @Transactional
     public ThetaModel save(String code) {
+        log.info(" Сохранение Theta code=[{}]", code);
         var theta = thetaRepository.getByCodeIgnoreDeleted(code);
 
         if (theta == null)
