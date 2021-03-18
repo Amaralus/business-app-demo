@@ -24,7 +24,7 @@ import static org.hibernate.annotations.LazyCollectionOption.FALSE;
 @SQLDelete(sql = "update alpha set deleted = 'Y' where alpha_code = ?")
 @Loader(namedQuery = "loadAlphaById")
 @NamedQuery(name = "loadAlphaById", query = "select a from AlphaModel a where a.alphaCode=?1 and a.deleted=false")
-public class AlphaModel extends AbstractModel<String> {
+public class AlphaModel extends AbstractModel<String> implements Cleanable<AlphaModel> {
 
     @Id
     @Column(name = "alpha_code", unique = true, nullable = false)
@@ -61,6 +61,13 @@ public class AlphaModel extends AbstractModel<String> {
         return getThetaLinks().stream()
                 .map(AlphaThetaLinkModel::getThetaModel)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public AlphaModel clearDeleted() {
+        alphaVersionModels.removeIf(AbstractModel::isDeleted);
+        thetaLinks.removeIf(AbstractModel::isDeleted);
+        return this;
     }
 
     @Override

@@ -110,7 +110,7 @@ class AlphaVersionModelsCrudTest {
         assertEquals(alpha, result);
         var model = alphaRepository.findById(alpha.getCode());
         assertTrue(model.isPresent());
-        var versions = model.get().getAlphaVersionModels();
+        var versions = model.get().clearDeleted().getAlphaVersionModels();
         assertFalse(versions.isEmpty());
         assertEquals(1, versions.size());
         assertEquals(alpha.getVersion().getVersionValue(), versions.get(0).getVersionValue());

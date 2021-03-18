@@ -36,7 +36,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
         model.setThetas(thetas);
 
         var result = softSave(model);
-        return mapper.modelToAlpha(result);
+        return mapper.modelToAlpha(result.clearDeleted());
     }
 
     private AlphaModel softSave(AlphaModel alphaModel){
@@ -52,7 +52,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Override
     public Alpha getById(String id) {
         return alphaRepository.findById(id)
-                .map(mapper::modelToAlpha)
+                .map(alphaModel -> mapper.modelToAlpha(alphaModel.clearDeleted()))
                 .orElse(null);
     }
 
