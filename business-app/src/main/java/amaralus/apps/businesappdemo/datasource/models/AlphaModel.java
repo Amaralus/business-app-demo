@@ -40,7 +40,7 @@ public class AlphaModel extends AbstractModel<String> {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "alphaModel", cascade = ALL)
+    @OneToMany(mappedBy = "alphaModel", cascade = ALL, orphanRemoval = true)
     @LazyCollection(FALSE)
     private List<AlphaThetaLinkModel> thetaLinks = new ArrayList<>();
 
@@ -51,9 +51,10 @@ public class AlphaModel extends AbstractModel<String> {
     }
 
     public void setThetas(Set<ThetaModel> thetaModels) {
-        thetaLinks = thetaModels.stream()
+        thetaLinks.clear();
+        thetaLinks.addAll(thetaModels.stream()
                 .map(theta -> new AlphaThetaLinkModel(this, theta))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     public Set<ThetaModel> getThetas() {

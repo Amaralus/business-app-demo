@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service;
 public class ReplicationService {
 
     public <D extends AbstractModel<?>> void replicate(D dao) {
-        log.info("Выполняется репликация для таблицы [{}] id=[{}]", dao.getTableName(), dao.getId());
+        log.debug("Выполняется репликация для таблицы [{}] id=[{}]", dao.getTableName(), dao.getId());
     }
 }
