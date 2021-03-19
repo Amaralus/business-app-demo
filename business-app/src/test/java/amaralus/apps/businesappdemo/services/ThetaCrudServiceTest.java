@@ -4,6 +4,7 @@ import amaralus.apps.businesappdemo.datasource.repositories.ThetaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -11,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @SpringBootTest
 @TestPropertySource("classpath:persistence-db.properties")
 @TestInstance(PER_CLASS)
+@Execution(CONCURRENT)
 @DisplayName("Тесты сервиса сущностей Theta")
 class ThetaCrudServiceTest {
 
@@ -27,7 +31,7 @@ class ThetaCrudServiceTest {
 
     @Test
     @DisplayName("Сохранение Theta | В базе пусто")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void save() {
         var result = thetaCrudService.save(THETA_CODE);
 
@@ -38,7 +42,7 @@ class ThetaCrudServiceTest {
 
     @Test
     @DisplayName("Сохранение Theta | В базе есть записть")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void update() {
         thetaCrudService.save(THETA_CODE);
         var result = thetaCrudService.save(THETA_CODE);
@@ -50,7 +54,7 @@ class ThetaCrudServiceTest {
 
     @Test
     @DisplayName("Сохранение Theta | В базе есть удаленная записть")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void restore() {
         var result = thetaCrudService.save(THETA_CODE);
         thetaRepository.delete(result);

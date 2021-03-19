@@ -6,6 +6,7 @@ import amaralus.apps.businesappdemo.datasource.repositories.AlphaVersionReposito
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -17,10 +18,13 @@ import static amaralus.apps.businesappdemo.TestUtil.alpha;
 import static amaralus.apps.businesappdemo.TestUtil.alphaVersion;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @SpringBootTest
 @TestPropertySource("classpath:persistence-db.properties")
 @TestInstance(PER_CLASS)
+@Execution(CONCURRENT)
 @DisplayName("Тесты для сущности AlphaVersion")
 class AlphaVersionModelsCrudTest {
 
@@ -36,7 +40,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе пусто")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void saveVersion() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -49,7 +53,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть записи")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void saveVersionUpdate() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -65,7 +69,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть удаленные записи")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void saveVersionRestoreDeleted() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -81,7 +85,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть другие записи")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void saveVersionContainsOtherVersion() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -98,7 +102,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Сохранение Alpha и AlphaVersion | В базе есть другие удаленные записи")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void saveVersionContainsOtherDeletedVersion() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -119,7 +123,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Удаление Alpha и AlphaVersion | В базе есть записи")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void delete() {
         var alpha = alpha("code1", alphaVersion());
 
@@ -133,7 +137,7 @@ class AlphaVersionModelsCrudTest {
 
     @Test
     @DisplayName("Получение Alpha и AlphaVersion | В базе несколько версий")
-    @Transactional
+    @Transactional(isolation = SERIALIZABLE)
     void getSeveralVersion() {
         var alpha = alpha("code1", alphaVersion());
 
