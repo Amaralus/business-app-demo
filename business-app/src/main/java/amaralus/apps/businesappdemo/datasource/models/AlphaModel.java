@@ -42,7 +42,7 @@ public class AlphaModel extends AbstractModel<String> implements Cleanable<Alpha
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "alphaModel", cascade = ALL, orphanRemoval = true)
     @LazyCollection(FALSE)
-    private List<AlphaThetaLinkModel> thetaLinks = new ArrayList<>();
+    private Set<AlphaThetaLinkModel> thetaLinks = new HashSet<>();
 
     public List<AlphaVersionModel> getAlphaVersionModels() {
         alphaVersionModels = new ArrayList<>(alphaVersionModels);
@@ -51,10 +51,22 @@ public class AlphaModel extends AbstractModel<String> implements Cleanable<Alpha
     }
 
     public void setThetas(Set<ThetaModel> thetaModels) {
-        thetaLinks.clear();
-        thetaLinks.addAll(thetaModels.stream()
+        thetaLinks.forEach(AbstractModel::delete);
+        var newLinks = thetaModels.stream()
                 .map(theta -> new AlphaThetaLinkModel(this, theta))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet());
+
+        // чтобы persistence context контекст не ругался на добавление сущетвующей сущности
+        // нужно убрать из новых существующие по thetaId и восстановить старую на случай если удалена
+        // в итоге будут добавлятся только новые у которых еще нет сгенерированных айдишников
+        for (var existedLink : thetaLinks)
+            for (var newLink : new HashSet<>(newLinks))
+                if (existedLink.getThetaId().equals(newLink.getThetaId())) {
+                    newLinks.remove(newLink);
+                    existedLink.restore();
+                }
+
+        thetaLinks.addAll(newLinks);
     }
 
     public Set<ThetaModel> getThetas() {

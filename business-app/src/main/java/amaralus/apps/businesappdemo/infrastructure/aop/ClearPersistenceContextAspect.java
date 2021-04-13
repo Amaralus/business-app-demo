@@ -1,6 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.aop;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,9 @@ public class ClearPersistenceContextAspect {
         this.entityManager = entityManager;
     }
 
-    @After("execution(* org.springframework.data.jpa.repository.JpaRepository.save(..)) " +
-            "|| execution(* org.springframework.data.jpa.repository.JpaRepository.saveAndFlush(..))")
-    public void afterSave() {
-        log.trace("clear persistence context...");
+    @After("execution(* org.springframework.data.jpa.repository.JpaRepository.*(..))")
+    public void afterSave(JoinPoint jp) {
+        log.debug("clearing persistence context after {}()...", jp.getSignature().getName());
         entityManager.flush();
         entityManager.clear();
     }

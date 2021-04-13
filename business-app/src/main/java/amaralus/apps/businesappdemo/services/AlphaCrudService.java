@@ -59,11 +59,11 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Transactional
     @Override
     public void delete(String id) {
-        log.info("delete alpha id=[{}]", id);
+        log.info("Удаление Alpha code=[{}]", id);
         try {
             alphaRepository.deleteById(id);
         } catch (EmptyResultDataAccessException ignored) {
-            log.warn("alpha for deletion with id=[{}] not found", id);
+            log.warn("Модель Aplha code=[{}] для удаления не найдена!", id);
         }
     }
 }

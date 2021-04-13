@@ -32,7 +32,7 @@ class AlphaThetaLinkModelTest {
     @Transactional(isolation = SERIALIZABLE)
     void save() {
         var alpha = alpha();
-        alpha.setThetas(Set.of("theta"));
+        alpha.setThetas(Set.of("save"));
 
         alphaCrudService.save(alpha);
         var result = alphaCrudService.getById(alpha.getCode());
@@ -45,10 +45,10 @@ class AlphaThetaLinkModelTest {
     @Transactional(isolation = SERIALIZABLE)
     void replace() {
         var alpha = alpha();
-        alpha.setThetas(Set.of("theta"));
+        alpha.setThetas(Set.of("insert"));
 
         alphaCrudService.save(alpha);
-        alpha.setThetas(Set.of("theta2"));
+        alpha.setThetas(Set.of("update"));
         alphaCrudService.save(alpha);
 
         var result = alphaCrudService.getById(alpha.getCode());
@@ -56,5 +56,19 @@ class AlphaThetaLinkModelTest {
         assertEquals(alpha, result);
     }
 
-    // restore
+    @Test
+    @DisplayName("Сохранение Alpha и Theta | В базе есть удаленная запись")
+    @Transactional(isolation = SERIALIZABLE)
+    void restore() {
+        var alpha = alpha();
+        alpha.setThetas(Set.of("restore"));
+
+        alphaCrudService.save(alpha);
+        alphaCrudService.delete(alpha.getCode());
+        alphaCrudService.save(alpha);
+
+        var result = alphaCrudService.getById(alpha.getCode());
+
+        assertEquals(alpha, result);
+    }
 }

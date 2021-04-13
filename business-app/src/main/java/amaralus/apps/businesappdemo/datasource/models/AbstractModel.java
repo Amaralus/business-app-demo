@@ -37,6 +37,10 @@ public abstract class AbstractModel<I extends Serializable> {
 
     public abstract void setId(I id);
 
+    public void delete() {
+        deleted = true;
+    }
+
     public void restore() {
         deleted = false;
     }
