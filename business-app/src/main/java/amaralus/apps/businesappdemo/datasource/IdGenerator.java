@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.datasource;
 
+import amaralus.apps.businesappdemo.datasource.models.AbstractModel;
 import amaralus.apps.businesappdemo.datasource.models.CompositeKey;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -15,14 +16,19 @@ public class IdGenerator implements IdentifierGenerator {
 
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        return generate(object);
-    }
-
-    public String generate(Object object) {
         if (!(object instanceof CompositeKey))
             throw new IllegalArgumentException("Неизвестный объект");
 
-        var uniqueFields = ((CompositeKey) object).getUniqueFields();
+        return generate((CompositeKey) object);
+    }
+
+    public static <E extends AbstractModel<String> & CompositeKey> void generateId(E entity) {
+        var id = generate(entity);
+        entity.setId(id);
+    }
+
+    private static String generate(CompositeKey compositeKey) {
+        var uniqueFields = compositeKey.getUniqueFields();
 
         if (uniqueFields == null || uniqueFields.isEmpty())
             throw new IllegalArgumentException("Уникальные поля не заданы");
@@ -30,11 +36,11 @@ public class IdGenerator implements IdentifierGenerator {
         return String.valueOf(
                 Objects.hash(
                         uniqueFields.stream()
-                                .map(this::getUniqueFieldValue)
+                                .map(IdGenerator::getUniqueFieldValue)
                                 .collect(Collectors.toList())));
     }
 
-    private Serializable getUniqueFieldValue(String uniqueField) {
+    private static Serializable getUniqueFieldValue(String uniqueField) {
         return Objects.requireNonNullElse(uniqueField, "null");
     }
 }

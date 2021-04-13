@@ -18,8 +18,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface AlphaMapper {
 
-    IdGenerator idGenerator = new IdGenerator();
-
     @Mapping(target = "code", source = "alphaCode")
     @Mapping(target = "version", source = "alphaVersionModels")
     Alpha modelToAlpha(AlphaModel alphaModel);
@@ -60,7 +58,7 @@ public interface AlphaMapper {
     default void alphaModelAfterMapping(@MappingTarget AlphaModel alphaModel) {
         for (var versionModel : alphaModel.getAlphaVersionModels()) {
             versionModel.setAlphaCode(alphaModel.getAlphaCode());
-            versionModel.setId(idGenerator.generate(versionModel));
+            IdGenerator.generateId(versionModel);
         }
     }
 }

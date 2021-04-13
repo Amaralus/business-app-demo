@@ -1,6 +1,7 @@
 package amaralus.apps.businesappdemo.datasource.models;
 
 import amaralus.apps.businesappdemo.datasource.models.link.AlphaThetaLinkModel;
+import amaralus.apps.businesappdemo.datasource.models.link.ManyToManyLinkedModel;
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.Loader;
@@ -24,7 +25,9 @@ import static org.hibernate.annotations.LazyCollectionOption.FALSE;
 @SQLDelete(sql = "update alpha set deleted = 'Y' where alpha_code = ?")
 @Loader(namedQuery = "loadAlphaById")
 @NamedQuery(name = "loadAlphaById", query = "select a from AlphaModel a where a.alphaCode=?1 and a.deleted=false")
-public class AlphaModel extends AbstractModel<String> implements Cleanable<AlphaModel> {
+public class AlphaModel
+        extends AbstractModel<String>
+        implements Cleanable<AlphaModel>, ManyToManyLinkedModel {
 
     @Id
     @Column(name = "alpha_code", unique = true, nullable = false)
@@ -51,22 +54,11 @@ public class AlphaModel extends AbstractModel<String> implements Cleanable<Alpha
     }
 
     public void setThetas(Set<ThetaModel> thetaModels) {
-        thetaLinks.forEach(AbstractModel::delete);
         var newLinks = thetaModels.stream()
                 .map(theta -> new AlphaThetaLinkModel(this, theta))
                 .collect(Collectors.toSet());
 
-        // чтобы persistence context контекст не ругался на добавление сущетвующей сущности
-        // нужно убрать из новых существующие по thetaId и восстановить старую на случай если удалена
-        // в итоге будут добавлятся только новые у которых еще нет сгенерированных айдишников
-        for (var existedLink : thetaLinks)
-            for (var newLink : new HashSet<>(newLinks))
-                if (existedLink.getThetaId().equals(newLink.getThetaId())) {
-                    newLinks.remove(newLink);
-                    existedLink.restore();
-                }
-
-        thetaLinks.addAll(newLinks);
+        replaceLinks(thetaLinks, newLinks);
     }
 
     public Set<ThetaModel> getThetas() {
