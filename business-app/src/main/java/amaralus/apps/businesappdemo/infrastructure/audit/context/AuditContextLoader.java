@@ -55,7 +55,6 @@ public class AuditContextLoader {
             var metadata = new FieldMetadata(field.getName(), field.getType(), getter);
             fieldsMetadata.add(metadata);
         }
-        // set fields to entity
         return new EntityMetadata(entityClass, fieldsMetadata);
     }
 
