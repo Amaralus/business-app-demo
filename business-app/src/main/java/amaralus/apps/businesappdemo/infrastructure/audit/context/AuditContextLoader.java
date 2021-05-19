@@ -1,6 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,11 @@ public class AuditContextLoader {
         var fieldsMetadata = new ArrayList<FieldMetadata>();
 
         for (var field : entityClass.getDeclaredFields()) {
+            if (field.getAnnotation(AuditExclude.class) != null) {
+                log.debug("Field [{}] was excluded", field.getName());
+                continue;
+            }
+
             var getter = BeanUtils.getPropertyDescriptor(entityClass, field.getName()).getReadMethod();
 
             if (getter == null) {
