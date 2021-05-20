@@ -4,13 +4,11 @@ import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
 public class CreateEntityEventFactory extends EntityEventFactory {
 
-    public CreateEntityEventFactory() {
-        eventCode("create" + eventCode);
-        createAuditLibraryEventBuilder();
-    }
-
     @Override
     public AuditLibraryEvent produce() {
+        groupCode(entityMetadata.getGroupCode());
+        eventCode("create" + entityMetadata.getEntityClass().getSimpleName());
+
         return null;
     }
 }

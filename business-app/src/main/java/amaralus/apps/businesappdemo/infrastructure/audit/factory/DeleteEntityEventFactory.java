@@ -4,13 +4,17 @@ import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
 public class DeleteEntityEventFactory extends EntityEventFactory {
 
-    public DeleteEntityEventFactory() {
-        eventCode("delete" + eventCode);
-        createAuditLibraryEventBuilder();
-    }
-
     @Override
     public AuditLibraryEvent produce() {
-        return null;
+        groupCode(entityMetadata.getGroupCode());
+        eventCode("delete" + entityMetadata.getEntityClass().getSimpleName());
+        createAuditLibraryEventBuilder();
+
+        var idField = entityMetadata.getIdFieldMetadata();
+        var fieldValue = idField.extractData(newAuditEntity);
+
+        auditLibraryEventBuilder.param(idField.getName(), fieldValue);
+
+        return auditLibraryEventBuilder.build();
     }
 }
