@@ -5,6 +5,7 @@ import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
+import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -13,10 +14,12 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityValidator.isValidEntity;
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.AuditEntityValidator.isValidEntity;
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType.*;
 
 @Slf4j
 public class AuditContextLoader {
@@ -40,6 +43,7 @@ public class AuditContextLoader {
             if (isValidEntity(entityClass)) {
                 var entityMetadata = loadMetadata(entityClass);
                 entitiesMetadata.put(entityClass, entityMetadata);
+                log.debug("{}", entityMetadata);
             } else {
                 log.warn("Invalid audit entity [{}] was skipped. Debug for more details", entityClass.getName());
             }
@@ -69,8 +73,22 @@ public class AuditContextLoader {
 
         var getter = BeanUtils.getPropertyDescriptor(entityClass, name).getReadMethod();
         var idField = field.getAnnotation(AuditId.class) != null;
+        var fieldType = defineFieldType(field);
 
-        return new FieldMetadata(entityClass, name, field.getType(), getter, idField);
+        return new FieldMetadata(entityClass, name, field.getType(), fieldType, getter, idField);
+    }
+
+    private FieldMetadataType defineFieldType(Field field) {
+        var type = field.getType();
+
+        if (type.isPrimitive()) return PRIMITIVE;
+        if (Collection.class.isAssignableFrom(type)) return COLLECTION;
+        if (Map.class.isAssignableFrom(type)) return MAP;
+
+        if (type.getAnnotation(AuditEntity.class) != null)
+            return AUDIT_ENTITY;
+        else
+            return OBJECT;
     }
 
     private Class<?> getEntityClass(BeanDefinition definition) {

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 @Slf4j
-public class EntityValidator {
+public class AuditEntityValidator {
 
     private final Class<?> entityClass;
 
@@ -15,10 +15,10 @@ public class EntityValidator {
     private boolean lowPerformance;
 
     public static boolean isValidEntity(Class<?> entityClass) {
-        return new EntityValidator(entityClass).validate();
+        return new AuditEntityValidator(entityClass).validate();
     }
 
-    private EntityValidator(Class<?> entityClass) {
+    private AuditEntityValidator(Class<?> entityClass) {
         this.entityClass = entityClass;
     }
 

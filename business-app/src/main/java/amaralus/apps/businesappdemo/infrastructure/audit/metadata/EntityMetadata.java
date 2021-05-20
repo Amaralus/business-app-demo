@@ -37,4 +37,21 @@ public class EntityMetadata {
     public FieldMetadata getIdFieldMetadata() {
         return idFieldMetadata;
     }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder("Entity metadata:").append("\n")
+                .append("class: [").append(entityClass.getName()).append("]\n")
+                .append("group code: [").append(groupCode).append("]\n")
+                .append("fields metadata:\n");
+
+        for (var fieldMetadata : fieldsMetadata)
+            builder.append("    name: [").append(fieldMetadata.getName()).append("]\n")
+                    .append("    field class: [").append(fieldMetadata.getFieldClass().getName()).append("]\n")
+                    .append("    type: ").append(fieldMetadata.getType()).append("\n")
+                    .append("    contains getter: ").append(fieldMetadata.getGetterMethod() != null).append("\n")
+                    .append("    is id-field: ").append(fieldMetadata.isIdField()).append("\n");
+
+        return builder.toString();
+    }
 }
