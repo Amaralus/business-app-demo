@@ -7,6 +7,7 @@ import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
@@ -14,6 +15,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityValidator.isValidEntity;
 
 @Slf4j
 public class AuditContextLoader {
@@ -33,14 +36,13 @@ public class AuditContextLoader {
         for (var definition : scanner.findCandidateComponents(packageToScan)) {
             log.debug("Found audit entity [{}]", definition.getBeanClassName());
 
-            Class<?> entityClass;
-            try {
-                entityClass = Class.forName(definition.getBeanClassName());
-            } catch (ClassNotFoundException e) {
-                throw new AuditContextLoadingException(e);
+            var entityClass = getEntityClass(definition);
+            if (isValidEntity(entityClass)) {
+                var entityMetadata = loadMetadata(entityClass);
+                entitiesMetadata.put(entityClass, entityMetadata);
+            } else {
+                log.warn("Invalid audit entity [{}] was skipped. Debug for more details", entityClass.getName());
             }
-            var entityMetadata = loadMetadata(entityClass);
-            entitiesMetadata.put(entityClass, entityMetadata);
         }
     }
 
@@ -48,7 +50,6 @@ public class AuditContextLoader {
         var fieldsMetadata = new ArrayList<FieldMetadata>();
 
         for (var field : entityClass.getDeclaredFields()) {
-
             var fieldMetadata = loadFieldMetadata(entityClass, field);
             if (fieldMetadata != null)
                 fieldsMetadata.add(fieldMetadata);
@@ -60,27 +61,24 @@ public class AuditContextLoader {
     private FieldMetadata loadFieldMetadata(Class<?> entityClass, Field field) {
         var name = field.getName();
         var exclude = field.getAnnotation(AuditExclude.class) != null;
-        var idField = field.getAnnotation(AuditId.class) != null;
 
         if (exclude) {
-            if (!idField) {
-                log.debug("Field [{}] was excluded", name);
-                return null;
-            } else
-                log.warn("Id-field [{}] can't be excluded", name);
+            log.debug("Field [{}] was excluded", name);
+            return null;
         }
 
         var getter = BeanUtils.getPropertyDescriptor(entityClass, name).getReadMethod();
-
-        if (getter == null) {
-            if (!idField){
-                log.debug("Field [{}] was skipped, because getter not found", name);
-                return null;
-            } else
-                log.warn("Getter must exist for id-field [{}] to improve performance", name);
-        }
+        var idField = field.getAnnotation(AuditId.class) != null;
 
         return new FieldMetadata(entityClass, name, field.getType(), getter, idField);
+    }
+
+    private Class<?> getEntityClass(BeanDefinition definition) {
+        try {
+            return Class.forName(definition.getBeanClassName());
+        } catch (ClassNotFoundException e) {
+            throw new AuditContextLoadingException(e);
+        }
     }
 
     public Map<Class<?>, EntityMetadata> getEntitiesMetadata() {

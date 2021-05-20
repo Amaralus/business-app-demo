@@ -2,6 +2,7 @@ package amaralus.apps.businesappdemo.entities;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.util.Set;
 @AuditEntity
 public class Alpha {
 
+    @AuditId
     private String code;
     @AuditExclude
     private String updateField;
