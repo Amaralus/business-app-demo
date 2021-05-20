@@ -9,7 +9,7 @@ public interface EventFactory {
 
     EventFactory success(boolean success);
 
-    EventFactory eventGroup(String eventGroup);
+    EventFactory groupCode(String eventGroup);
 
     EventFactory eventCode(String eventCode);
 

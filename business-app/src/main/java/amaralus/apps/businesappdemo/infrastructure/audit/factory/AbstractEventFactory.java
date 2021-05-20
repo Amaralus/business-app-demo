@@ -1,19 +1,21 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
+import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent.AuditLibraryEventBuilder;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public abstract class AbstractEventFactory implements EventFactory {
 
     protected boolean success;
-    protected String eventGroup;
+    protected String groupCode;
     protected String eventCode;
     protected Map<String, String> params;
     protected Object oldAuditEntity;
     protected Object newAuditEntity;
     protected EntityMetadata entityMetadata;
+
+    protected AuditLibraryEventBuilder auditLibraryEventBuilder;
 
     public static EventFactory createEventFactory(FactoryType factoryType) {
         switch (factoryType) {
@@ -24,8 +26,12 @@ public abstract class AbstractEventFactory implements EventFactory {
             case DELETE_ENTITY_FACTORY:
                 return new DeleteEntityEventFactory();
             default:
-                throw new NoSuchElementException("factory for type " + factoryType + " doesn't exist");
+                return new DefaultEventFactory();
         }
+    }
+
+    protected void createAuditLibraryEventBuilder() {
+        auditLibraryEventBuilder = new AuditLibraryEventBuilder(groupCode, eventCode, success);
     }
 
     @Override
@@ -35,8 +41,8 @@ public abstract class AbstractEventFactory implements EventFactory {
     }
 
     @Override
-    public EventFactory eventGroup(String eventGroup) {
-        this.eventGroup = eventGroup;
+    public EventFactory groupCode(String groupCode) {
+        this.groupCode = groupCode;
         return this;
     }
 

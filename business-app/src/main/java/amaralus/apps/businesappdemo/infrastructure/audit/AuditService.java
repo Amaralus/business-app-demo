@@ -9,6 +9,9 @@ import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryServic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.DELETE;
 import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.SAVE;
 import static amaralus.apps.businesappdemo.infrastructure.audit.factory.FactoryType.*;
@@ -37,6 +40,10 @@ public class AuditService {
 
         private final boolean success;
         private final EventType eventType;
+        private final Map<String, String> params = new HashMap<>();
+
+        private String groupCode;
+        private String eventCode;
 
         private Object oldAuditEntity;
         private Object newAuditEntity;
@@ -47,6 +54,21 @@ public class AuditService {
         private EventSender(boolean success, EventType eventType) {
             this.success = success;
             this.eventType = eventType;
+        }
+
+        public EventSender groupCode(String groupCode) {
+            this.groupCode = groupCode;
+            return this;
+        }
+
+        public EventSender eventCode(String eventCode) {
+            this.eventCode = eventCode;
+            return this;
+        }
+
+        public EventSender param(String name, Object value) {
+            params.put(name, value.toString());
+            return this;
         }
 
         public EventSender entity(Object auditEntity) {
@@ -80,6 +102,9 @@ public class AuditService {
 
             event = AbstractEventFactory.createEventFactory(getFactoryType())
                     .success(success)
+                    .groupCode(groupCode)
+                    .eventCode(eventCode)
+                    .params(params)
                     .oldAuditEntity(oldAuditEntity)
                     .newAuditEntity(newAuditEntity)
                     .entityMetadata(entityMetadata)
