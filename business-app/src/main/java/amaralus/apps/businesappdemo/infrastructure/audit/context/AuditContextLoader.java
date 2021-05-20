@@ -2,6 +2,7 @@ package amaralus.apps.businesappdemo.infrastructure.audit.context;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -57,19 +58,29 @@ public class AuditContextLoader {
     }
 
     private FieldMetadata loadFieldMetadata(Class<?> entityClass, Field field) {
-        if (field.getAnnotation(AuditExclude.class) != null) {
-            log.debug("Field [{}] was excluded", field.getName());
-            return null;
+        var name = field.getName();
+        var exclude = field.getAnnotation(AuditExclude.class) != null;
+        var idField = field.getAnnotation(AuditId.class) != null;
+
+        if (exclude) {
+            if (!idField) {
+                log.debug("Field [{}] was excluded", name);
+                return null;
+            } else
+                log.warn("Id-field [{}] can't be excluded", name);
         }
 
-        var getter = BeanUtils.getPropertyDescriptor(entityClass, field.getName()).getReadMethod();
+        var getter = BeanUtils.getPropertyDescriptor(entityClass, name).getReadMethod();
 
         if (getter == null) {
-            log.debug("Field [{}] was skipped, because getter not found", field.getName());
-            return null;
+            if (!idField){
+                log.debug("Field [{}] was skipped, because getter not found", name);
+                return null;
+            } else
+                log.warn("Getter must exist for id-field [{}] to improve performance", name);
         }
 
-        return new FieldMetadata(field.getName(), field.getType(), getter);
+        return new FieldMetadata(entityClass, name, field.getType(), getter, idField);
     }
 
     public Map<Class<?>, EntityMetadata> getEntitiesMetadata() {
