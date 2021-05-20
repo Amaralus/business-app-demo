@@ -12,4 +12,12 @@ public class AuditContext {
     public AuditContext(Map<Class<?>, EntityMetadata> entitiesMetadata) {
         this.entitiesMetadata.putAll(entitiesMetadata);
     }
+
+    public EntityMetadata getMetadata(Class<?> entityClass) {
+        return entitiesMetadata.get(entityClass);
+    }
+
+    public boolean containsMetadata(Class<?> entityClass) {
+        return entitiesMetadata.containsKey(entityClass);
+    }
 }
