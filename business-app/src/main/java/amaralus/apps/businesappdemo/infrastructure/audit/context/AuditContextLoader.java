@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,22 +47,29 @@ public class AuditContextLoader {
         var fieldsMetadata = new ArrayList<FieldMetadata>();
 
         for (var field : entityClass.getDeclaredFields()) {
-            if (field.getAnnotation(AuditExclude.class) != null) {
-                log.debug("Field [{}] was excluded", field.getName());
-                continue;
-            }
 
-            var getter = BeanUtils.getPropertyDescriptor(entityClass, field.getName()).getReadMethod();
-
-            if (getter == null) {
-                log.debug("Field [{}] was skipped, because getter not found", field.getName());
-                continue;
-            }
-
-            var metadata = new FieldMetadata(field.getName(), field.getType(), getter);
-            fieldsMetadata.add(metadata);
+            var fieldMetadata = loadFieldMetadata(entityClass, field);
+            if (fieldMetadata != null)
+                fieldsMetadata.add(fieldMetadata);
         }
+
         return new EntityMetadata(entityClass, fieldsMetadata);
+    }
+
+    private FieldMetadata loadFieldMetadata(Class<?> entityClass, Field field) {
+        if (field.getAnnotation(AuditExclude.class) != null) {
+            log.debug("Field [{}] was excluded", field.getName());
+            return null;
+        }
+
+        var getter = BeanUtils.getPropertyDescriptor(entityClass, field.getName()).getReadMethod();
+
+        if (getter == null) {
+            log.debug("Field [{}] was skipped, because getter not found", field.getName());
+            return null;
+        }
+
+        return new FieldMetadata(field.getName(), field.getType(), getter);
     }
 
     public Map<Class<?>, EntityMetadata> getEntitiesMetadata() {
