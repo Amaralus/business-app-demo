@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@AuditEntity
+@AuditEntity(groupCode = "ADMINISTRATION")
 public class AlphaVersion {
     @AuditId
     private String versionValue;

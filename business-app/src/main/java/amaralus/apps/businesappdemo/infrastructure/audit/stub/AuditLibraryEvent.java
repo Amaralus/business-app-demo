@@ -19,7 +19,7 @@ public class AuditLibraryEvent {
                 .append("success: ").append(success).append("\n")
                 .append("params:\n");
 
-        params.forEach((name, value) -> builder.append(name).append(": ").append(value).append("\n"));
+        params.forEach((name, value) -> builder.append("    ").append(name).append(": ").append(value).append("\n"));
 
         return builder.toString();
     }

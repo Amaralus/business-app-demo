@@ -23,19 +23,8 @@ public class FieldMetadata {
         this.idField = idField;
     }
 
-    public Object extractData(Object targetObject) {
-        try {
-            if (getterMethod != null)
-                return getterMethod.invoke(targetObject);
-            else {
-                var field = entityClass.getDeclaredField(name);
-                field.setAccessible(true);
-                return field.get(targetObject);
-            }
-        } catch (Exception e) {
-            log.warn("Unsuccessful data extraction from field [" + name + "]");
-            return "DATA EXTRACTION ERROR";
-        }
+    public Class<?> getEntityClass() {
+        return entityClass;
     }
 
     public String getName() {

@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ObjectProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
 public class DeleteEntityEventFactory implements EventFactory {
@@ -12,7 +13,7 @@ public class DeleteEntityEventFactory implements EventFactory {
                 eventData.isSuccess());
 
         var idField = eventData.getEntityMetadata().getIdFieldMetadata();
-        var fieldValue = idField.extractData(eventData.getNewAuditEntity());
+        var fieldValue = new ObjectProcessingStrategy().process(idField, eventData.getNewAuditEntity());
 
         auditLibraryEventBuilder.param(idField.getName(), fieldValue);
 

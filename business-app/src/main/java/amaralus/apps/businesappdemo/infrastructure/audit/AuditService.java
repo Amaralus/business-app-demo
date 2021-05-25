@@ -82,6 +82,11 @@ public class AuditService {
 
         private void prepareEvent() {
             if (eventType == SAVE || eventType == DELETE) {
+                if (eventData.getNewAuditEntity() == null) {
+                    log.warn("Отсутствует аудируемая сущность");
+                    return;
+                }
+
                 if (!auditContext.containsMetadata(eventData.getNewAuditEntity().getClass())) {
                     log.warn("Нет метамодели для сущности [{}]", eventData.getNewAuditEntity().getClass().getName());
                     return;

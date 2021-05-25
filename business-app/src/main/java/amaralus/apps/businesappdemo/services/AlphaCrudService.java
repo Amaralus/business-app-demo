@@ -35,12 +35,17 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     public Alpha save(Alpha alpha) {
         log.info("Сохранение Alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
         var model = mapper.alphaToModel(alpha);
+        var old = getById(alpha.getCode());
 
         var thetas = thetaCrudService.save(alpha.getThetas());
         model.setThetas(thetas);
 
         var result = softSave(model);
-        return mapper.modelToAlpha(result.clearDeleted());
+        var saved = mapper.modelToAlpha(result.clearDeleted());
+        auditService.successEvent(EventType.SAVE)
+                .entity(saved, old)
+                .send();
+        return saved;
     }
 
     private AlphaModel softSave(AlphaModel alphaModel){
