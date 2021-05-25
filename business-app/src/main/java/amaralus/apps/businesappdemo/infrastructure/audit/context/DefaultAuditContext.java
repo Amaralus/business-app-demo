@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntityUnsupportedException;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.DefaultEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
@@ -16,12 +17,12 @@ public class DefaultAuditContext implements AuditContext {
 
     @Override
     public boolean containsMetadata(Class<?> entityClass) {
-        return false;
+        throw new AuditEntityUnsupportedException();
     }
 
     @Override
     public EntityMetadata getMetadata(Class<?> entityClass) {
-        throw new UnsupportedOperationException("Default audit context doesn't support metadata processing");
+        throw new AuditEntityUnsupportedException();
     }
 
     @Override
