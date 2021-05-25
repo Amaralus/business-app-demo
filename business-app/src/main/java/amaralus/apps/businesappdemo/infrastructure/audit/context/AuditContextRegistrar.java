@@ -23,11 +23,11 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
         contextLoader.loadAuditContextMetadata();
 
         var beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(AuditContext.class);
+        beanDefinition.setBeanClass(EntitySupportedAuditContext.class);
         beanDefinition.setPrimary(true);
         beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, contextLoader.getEntitiesMetadata());
 
-        registry.registerBeanDefinition(StringUtils.uncapitalize(AuditContext.class.getSimpleName()), beanDefinition);
+        registry.registerBeanDefinition(StringUtils.uncapitalize(EntitySupportedAuditContext.class.getSimpleName()), beanDefinition);
 
         registerFactory(registry, CreateEntityEventFactory.class);
         registerFactory(registry, UpdateEntityEventFactory.class);
