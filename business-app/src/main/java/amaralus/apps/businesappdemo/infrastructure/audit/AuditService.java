@@ -1,20 +1,16 @@
 package amaralus.apps.businesappdemo.infrastructure.audit;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.context.AuditContext;
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.AbstractEventFactory;
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.FactoryType;
-import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventData;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryServiceStub;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.DELETE;
 import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.SAVE;
-import static amaralus.apps.businesappdemo.infrastructure.audit.factory.FactoryType.*;
+import static amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory.Type.*;
 
 @Service
 @Slf4j
@@ -38,36 +34,29 @@ public class AuditService {
 
     public class EventSender {
 
-        private final boolean success;
+        private final EventData eventData;
         private final EventType eventType;
-        private final Map<String, String> params = new HashMap<>();
-
-        private String groupCode;
-        private String eventCode;
-
-        private Object oldAuditEntity;
-        private Object newAuditEntity;
-        private EntityMetadata entityMetadata;
 
         private AuditLibraryEvent event;
 
         private EventSender(boolean success, EventType eventType) {
-            this.success = success;
+            this.eventData = new EventData();
+            eventData.setSuccess(success);
             this.eventType = eventType;
         }
 
         public EventSender groupCode(String groupCode) {
-            this.groupCode = groupCode;
+            eventData.setGroupCode(groupCode);
             return this;
         }
 
         public EventSender eventCode(String eventCode) {
-            this.eventCode = eventCode;
+            eventData.setEventCode(eventCode);
             return this;
         }
 
         public EventSender param(String name, Object value) {
-            params.put(name, value.toString());
+            eventData.addParam(name, value.toString());
             return this;
         }
 
@@ -76,8 +65,8 @@ public class AuditService {
         }
 
         public EventSender entity(Object newAuditEntity, Object oldAuditEntity) {
-            this.newAuditEntity = newAuditEntity;
-            this.oldAuditEntity = oldAuditEntity;
+            eventData.setNewAuditEntity(newAuditEntity);
+            eventData.setOldAuditEntity(oldAuditEntity);
             return this;
         }
 
@@ -93,28 +82,21 @@ public class AuditService {
 
         private void prepareEvent() {
             if (eventType == SAVE || eventType == DELETE) {
-                if (!auditContext.containsMetadata(newAuditEntity.getClass())) {
-                    log.warn("Нет метамодели для сущности [{}]", newAuditEntity.getClass().getName());
+                if (!auditContext.containsMetadata(eventData.getNewAuditEntity().getClass())) {
+                    log.warn("Нет метамодели для сущности [{}]", eventData.getNewAuditEntity().getClass().getName());
                     return;
                 }
-                entityMetadata = auditContext.getMetadata(newAuditEntity.getClass());
+                var entityMetadata = auditContext.getMetadata(eventData.getNewAuditEntity().getClass());
+                eventData.setEntityMetadata(entityMetadata);
             }
 
-            event = AbstractEventFactory.createEventFactory(getFactoryType())
-                    .success(success)
-                    .groupCode(groupCode)
-                    .eventCode(eventCode)
-                    .params(params)
-                    .oldAuditEntity(oldAuditEntity)
-                    .newAuditEntity(newAuditEntity)
-                    .entityMetadata(entityMetadata)
-                    .produce();
+            event = auditContext.getEventFactory(getFactoryType()).produce(eventData);
         }
 
-        private FactoryType getFactoryType() {
+        private EventFactory.Type getFactoryType() {
             switch (eventType) {
                 case SAVE:
-                    return oldAuditEntity == null ? CREATE_ENTITY_FACTORY : UPDATE_ENTITY_FACTORY;
+                    return eventData.getOldAuditEntity() == null ? CREATE_ENTITY_FACTORY : UPDATE_ENTITY_FACTORY;
                 case DELETE:
                     return DELETE_ENTITY_FACTORY;
                 default:

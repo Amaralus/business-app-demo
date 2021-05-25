@@ -81,7 +81,6 @@ public class AuditContextLoader {
     private FieldMetadataType defineFieldType(Field field) {
         var type = field.getType();
 
-        if (type.isPrimitive()) return PRIMITIVE;
         if (Collection.class.isAssignableFrom(type)) return COLLECTION;
         if (Map.class.isAssignableFrom(type)) return MAP;
 

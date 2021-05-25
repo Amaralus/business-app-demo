@@ -2,13 +2,20 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
-public class CreateEntityEventFactory extends EntityEventFactory {
+public class CreateEntityEventFactory implements EventFactory {
 
     @Override
-    public AuditLibraryEvent produce() {
-        groupCode(entityMetadata.getGroupCode());
-        eventCode("create" + entityMetadata.getEntityClass().getSimpleName());
+    public AuditLibraryEvent produce(EventData eventData) {
+        var auditLibraryEventBuilder = new AuditLibraryEvent.AuditLibraryEventBuilder(
+                eventData.getEntityMetadata().getGroupCode(),
+                "create" + eventData.getEntityMetadata().getEntityClass().getSimpleName(),
+                eventData.isSuccess());
 
-        return null;
+        return auditLibraryEventBuilder.build();
+    }
+
+    @Override
+    public Type getFactoryType() {
+        return Type.CREATE_ENTITY_FACTORY;
     }
 }

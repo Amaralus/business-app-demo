@@ -1,12 +1,17 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.EnableAuditManagement;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.CreateEntityEventFactory;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.DeleteEntityEventFactory;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.UpdateEntityEventFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardClassMetadata;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
@@ -19,9 +24,22 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
 
         var beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(AuditContext.class);
-        beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(contextLoader.getEntitiesMetadata());
+        beanDefinition.setPrimary(true);
+        beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, contextLoader.getEntitiesMetadata());
 
-        registry.registerBeanDefinition("auditContext", beanDefinition);
+        registry.registerBeanDefinition(StringUtils.uncapitalize(AuditContext.class.getSimpleName()), beanDefinition);
+
+        registerFactory(registry, CreateEntityEventFactory.class);
+        registerFactory(registry, UpdateEntityEventFactory.class);
+        registerFactory(registry, DeleteEntityEventFactory.class);
+    }
+
+    private void registerFactory(BeanDefinitionRegistry registry, Class<? extends EventFactory> factoryClass) {
+        var factoryDefinition = new GenericBeanDefinition();
+
+        factoryDefinition.setBeanClass(factoryClass);
+
+        registry.registerBeanDefinition(StringUtils.uncapitalize(factoryClass.getSimpleName()), factoryDefinition);
     }
 
     private String getPackageToScan(AnnotationMetadata importingClassMetadata) {

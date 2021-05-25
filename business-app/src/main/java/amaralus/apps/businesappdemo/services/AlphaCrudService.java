@@ -3,6 +3,8 @@ package amaralus.apps.businesappdemo.services;
 import amaralus.apps.businesappdemo.datasource.models.AlphaModel;
 import amaralus.apps.businesappdemo.datasource.repositories.AlphaRepository;
 import amaralus.apps.businesappdemo.entities.Alpha;
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditService;
+import amaralus.apps.businesappdemo.infrastructure.audit.EventType;
 import amaralus.apps.businesappdemo.infrastructure.mappers.AlphaMapper;
 import amaralus.apps.businesappdemo.infrastructure.mappers.MergeMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +20,14 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     private final ThetaCrudService thetaCrudService;
     private final AlphaMapper mapper;
     private final MergeMapper merger;
+    private final AuditService auditService;
 
-    public AlphaCrudService(AlphaRepository alphaRepository, ThetaCrudService thetaCrudService, AlphaMapper mapper, MergeMapper merger) {
+    public AlphaCrudService(AlphaRepository alphaRepository, ThetaCrudService thetaCrudService, AlphaMapper mapper, MergeMapper merger, AuditService auditService) {
         this.alphaRepository = alphaRepository;
         this.thetaCrudService = thetaCrudService;
         this.mapper = mapper;
         this.merger = merger;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -61,6 +65,9 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     public void delete(String id) {
         log.info("Удаление Alpha code=[{}]", id);
         try {
+            auditService.successEvent(EventType.DELETE)
+                    .entity(getById(id))
+                    .send();
             alphaRepository.deleteById(id);
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Модель Aplha code=[{}] для удаления не найдена!", id);
