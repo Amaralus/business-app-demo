@@ -1,6 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.context.AuditContextRegistrar;
+import amaralus.apps.businesappdemo.infrastructure.audit.context.init.AuditContextRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 @Import(AuditContextRegistrar.class)
-public @interface EnableAuditManagement {
+public @interface EnableAuditEntityManagement {
 
     String packageToScan() default "";
 }

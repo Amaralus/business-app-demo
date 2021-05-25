@@ -1,4 +1,4 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.context;
+package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;

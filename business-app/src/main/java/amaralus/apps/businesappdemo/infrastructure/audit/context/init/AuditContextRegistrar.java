@@ -1,6 +1,7 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.context;
+package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.EnableAuditManagement;
+import amaralus.apps.businesappdemo.infrastructure.audit.EnableAuditEntityManagement;
+import amaralus.apps.businesappdemo.infrastructure.audit.context.EntitySupportedAuditContext;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.CreateEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.DeleteEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
@@ -18,7 +19,7 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        log.info("Loading audit metadata");
+        log.info("Loading audit entities metadata");
         var contextLoader = new AuditContextLoader(getPackageToScan(importingClassMetadata));
         contextLoader.loadAuditContextMetadata();
 
@@ -44,7 +45,7 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
 
     private String getPackageToScan(AnnotationMetadata importingClassMetadata) {
         var basePackage = ((StandardClassMetadata) importingClassMetadata).getIntrospectedClass().getPackage().getName();
-        var packageToScan = importingClassMetadata.getAnnotations().get(EnableAuditManagement.class).getString("packageToScan");
+        var packageToScan = importingClassMetadata.getAnnotations().get(EnableAuditEntityManagement.class).getString("packageToScan");
 
         return packageToScan.isEmpty() ? basePackage : packageToScan;
     }
