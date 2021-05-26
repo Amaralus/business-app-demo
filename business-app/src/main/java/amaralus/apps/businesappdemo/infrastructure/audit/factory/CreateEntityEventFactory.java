@@ -16,7 +16,7 @@ public class CreateEntityEventFactory implements EventFactory {
         for (var metadata : eventData.getEntityMetadata().getFieldsMetadata())
             // todo AuditEntity processing, collection processing, map processing
             // пока что все воспринимаем как объект
-            auditLibraryEventBuilder.param(metadata.getName(), wrapNull(objectProcessingStrategy.process(metadata, eventData.getNewAuditEntity())));
+            auditLibraryEventBuilder.param(metadata.getParamName(), wrapNull(objectProcessingStrategy.process(metadata, eventData.getNewAuditEntity())));
 
         return auditLibraryEventBuilder.build();
     }

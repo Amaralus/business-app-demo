@@ -1,8 +1,8 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
-import amaralus.apps.businesappdemo.infrastructure.audit.AuditExclude;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditParam;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType;
@@ -63,19 +63,20 @@ public class AuditContextLoader {
     }
 
     private FieldMetadata loadFieldMetadata(Class<?> entityClass, Field field) {
-        var name = field.getName();
-        var exclude = field.getAnnotation(AuditExclude.class) != null;
+        var fieldName = field.getName();
+        var auditParam = field.getAnnotation(AuditParam.class);
 
-        if (exclude) {
-            log.debug("Field [{}] was excluded", name);
+        if (auditParam == null) {
+            log.debug("Field [{}] was excluded", fieldName);
             return null;
         }
 
-        var getter = BeanUtils.getPropertyDescriptor(entityClass, name).getReadMethod();
+        var paramName = auditParam.name().isEmpty() ? fieldName : auditParam.name();
+        var getter = BeanUtils.getPropertyDescriptor(entityClass, fieldName).getReadMethod();
         var idField = field.getAnnotation(AuditId.class) != null;
         var fieldType = defineFieldType(field);
 
-        return new FieldMetadata(entityClass, name, field.getType(), fieldType, getter, idField);
+        return new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
     }
 
     private FieldMetadataType defineFieldType(Field field) {

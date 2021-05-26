@@ -15,7 +15,7 @@ public class DeleteEntityEventFactory implements EventFactory {
         var idField = eventData.getEntityMetadata().getIdFieldMetadata();
         var fieldValue = new ObjectProcessingStrategy().process(idField, eventData.getNewAuditEntity());
 
-        auditLibraryEventBuilder.param(idField.getName(), fieldValue);
+        auditLibraryEventBuilder.param(idField.getParamName(), fieldValue);
 
         return auditLibraryEventBuilder.build();
     }

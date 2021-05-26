@@ -47,6 +47,7 @@ public class EntityMetadata {
 
         for (var fieldMetadata : fieldsMetadata)
             builder.append("    name: [").append(fieldMetadata.getName()).append("]\n")
+                    .append("    param name: [").append(fieldMetadata.getParamName()).append("]\n")
                     .append("    field class: [").append(fieldMetadata.getFieldClass().getName()).append("]\n")
                     .append("    type: ").append(fieldMetadata.getType()).append("\n")
                     .append("    contains getter: ").append(fieldMetadata.getGetterMethod() != null).append("\n")

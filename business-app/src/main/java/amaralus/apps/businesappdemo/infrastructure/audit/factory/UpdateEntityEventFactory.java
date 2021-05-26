@@ -25,7 +25,7 @@ public class UpdateEntityEventFactory implements EventFactory {
             var diff = getDiff(oldValue, newValue);
 
             if (diff != null)
-                auditLibraryEventBuilder.param(metadata.getName(), diff);
+                auditLibraryEventBuilder.param(metadata.getParamName(), diff);
         }
 
         return auditLibraryEventBuilder.build();

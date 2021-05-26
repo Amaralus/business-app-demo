@@ -9,14 +9,16 @@ public class FieldMetadata {
 
     private final Class<?> entityClass;
     private final String name;
+    private final String paramName;
     private final Class<?> fieldClass;
     private final FieldMetadataType type;
     private final Method getterMethod;
     private final boolean idField;
 
-    public FieldMetadata(Class<?> entityClass, String name, Class<?> fieldClass, FieldMetadataType type, Method getterMethod, boolean idField) {
+    public FieldMetadata(Class<?> entityClass, String name, String paramName, Class<?> fieldClass, FieldMetadataType type, Method getterMethod, boolean idField) {
         this.entityClass = entityClass;
         this.name = name;
+        this.paramName = paramName;
         this.fieldClass = fieldClass;
         this.type = type;
         this.getterMethod = getterMethod;
@@ -29,6 +31,10 @@ public class FieldMetadata {
 
     public String getName() {
         return name;
+    }
+
+    public String getParamName() {
+        return paramName;
     }
 
     public Class<?> getFieldClass() {
