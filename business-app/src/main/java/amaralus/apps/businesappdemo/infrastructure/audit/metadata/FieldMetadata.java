@@ -15,6 +15,8 @@ public class FieldMetadata {
     private final Method getterMethod;
     private final boolean idField;
 
+    private EntityMetadata entityMetadataLink;
+
     public FieldMetadata(Class<?> entityClass, String name, String paramName, Class<?> fieldClass, FieldMetadataType type, Method getterMethod, boolean idField) {
         this.entityClass = entityClass;
         this.name = name;
@@ -51,5 +53,13 @@ public class FieldMetadata {
 
     public boolean isIdField() {
         return idField;
+    }
+
+    public void setEntityMetadataLink(EntityMetadata entityMetadataLink) {
+        this.entityMetadataLink = entityMetadataLink;
+    }
+
+    public EntityMetadata getEntityMetadataLink() {
+        return entityMetadataLink;
     }
 }

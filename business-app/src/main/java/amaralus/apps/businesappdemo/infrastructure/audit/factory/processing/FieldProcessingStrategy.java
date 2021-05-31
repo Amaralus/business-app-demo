@@ -22,7 +22,7 @@ public abstract class FieldProcessingStrategy extends State {
                 return field.get(targetObject);
             }
         } catch (Exception e) {
-            log.warn("Unsuccessful data extraction from field [" + fieldMetadata.getName() + "]");
+            log.warn("Unsuccessful data extraction from field [" + fieldMetadata.getName() + "]", e);
             return "DATA EXTRACTION ERROR";
         }
     }
@@ -40,7 +40,7 @@ public abstract class FieldProcessingStrategy extends State {
     }
 
     private String updateName(String name) {
-        return paramNamePrefix != null? paramNamePrefix + " -> " + name : name;
+        return paramNamePrefix != null? paramNamePrefix + " | " + name : name;
     }
 
     public void addParams(Map<String , Object> params) {

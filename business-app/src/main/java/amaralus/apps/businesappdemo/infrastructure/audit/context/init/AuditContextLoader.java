@@ -48,6 +48,8 @@ public class AuditContextLoader {
                 log.warn("Invalid audit entity [{}] was skipped. Debug for more details", entityClass.getName());
             }
         }
+
+        fillMetadataLinks();
     }
 
     private EntityMetadata loadMetadata(Class<?> entityClass) {
@@ -77,6 +79,13 @@ public class AuditContextLoader {
         var fieldType = defineFieldType(field);
 
         return new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
+    }
+
+    private void fillMetadataLinks() {
+        entitiesMetadata.values().stream()
+                .flatMap(entityMetadata -> entityMetadata.getFieldsMetadata().stream())
+                .filter(fieldMetadata -> fieldMetadata.getType() == AUDIT_ENTITY)
+                .forEach(fieldMetadata -> fieldMetadata.setEntityMetadataLink(entitiesMetadata.get(fieldMetadata.getFieldClass())));
     }
 
     private FieldMetadataType defineFieldType(Field field) {
