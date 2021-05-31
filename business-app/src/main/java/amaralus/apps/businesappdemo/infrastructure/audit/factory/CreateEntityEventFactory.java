@@ -1,6 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ObjectProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.StateMachine;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
 public class CreateEntityEventFactory implements EventFactory {
@@ -12,11 +13,16 @@ public class CreateEntityEventFactory implements EventFactory {
                 "create" + eventData.getEntityMetadata().getEntityClass().getSimpleName(),
                 eventData.isSuccess());
 
-        var objectProcessingStrategy = new ObjectProcessingStrategy();
-        for (var metadata : eventData.getEntityMetadata().getFieldsMetadata())
+        var stateMachine = new StateMachine();
+        for (var metadata : eventData.getEntityMetadata().getFieldsMetadata()) {
             // todo AuditEntity processing, collection processing, map processing
             // пока что все воспринимаем как объект
-            auditLibraryEventBuilder.param(metadata.getParamName(), wrapNull(objectProcessingStrategy.process(metadata, eventData.getNewAuditEntity())));
+            var objectProcessingStrategy = new ObjectProcessingStrategy(stateMachine, metadata, eventData.getNewAuditEntity());
+            stateMachine.addState(objectProcessingStrategy);
+            objectProcessingStrategy.update();
+
+            auditLibraryEventBuilder.param(metadata.getParamName(), wrapNull(objectProcessingStrategy.getParams().get(metadata.getParamName())));
+        }
 
         return auditLibraryEventBuilder.build();
     }
