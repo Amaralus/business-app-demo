@@ -1,6 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ObjectProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.AuditEntityProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.StateMachine;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
@@ -14,21 +14,14 @@ public class CreateEntityEventFactory implements EventFactory {
                 eventData.isSuccess());
 
         var stateMachine = new StateMachine();
-        for (var metadata : eventData.getEntityMetadata().getFieldsMetadata()) {
-            // todo AuditEntity processing, collection processing, map processing
-            // пока что все воспринимаем как объект
-            var objectProcessingStrategy = new ObjectProcessingStrategy(stateMachine, metadata, eventData.getNewAuditEntity());
-            stateMachine.addState(objectProcessingStrategy);
-            objectProcessingStrategy.update();
 
-            auditLibraryEventBuilder.param(metadata.getParamName(), wrapNull(objectProcessingStrategy.getParams().get(metadata.getParamName())));
-        }
+        var entityStrategy = new AuditEntityProcessingStrategy(eventData.getEntityMetadata(), eventData.getNewAuditEntity());
+        stateMachine.addState(entityStrategy);
 
+        stateMachine.executeAll();
+
+        entityStrategy.getParams().forEach(auditLibraryEventBuilder::param);
         return auditLibraryEventBuilder.build();
-    }
-
-    private Object wrapNull(Object object) {
-        return object == null ? "null": object;
     }
 
     @Override

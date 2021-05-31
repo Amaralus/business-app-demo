@@ -11,10 +11,6 @@ public abstract class FieldProcessingStrategy extends State {
 
     protected Map<String, Object> params = new HashMap<>();
 
-    protected FieldProcessingStrategy(StateMachine stateMachine) {
-        super(stateMachine);
-    }
-
     protected Object extractData(FieldMetadata fieldMetadata, Object targetObject) {
         try {
             if (fieldMetadata.getGetterMethod() != null)

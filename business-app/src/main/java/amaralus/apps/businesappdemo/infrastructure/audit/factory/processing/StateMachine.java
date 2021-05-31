@@ -9,6 +9,7 @@ public class StateMachine {
     private final Deque<State> stateStack = new ArrayDeque<>();
 
     public void addState(State state) {
+        state.setStateMachine(this);
         stateStack.push(state);
     }
 
