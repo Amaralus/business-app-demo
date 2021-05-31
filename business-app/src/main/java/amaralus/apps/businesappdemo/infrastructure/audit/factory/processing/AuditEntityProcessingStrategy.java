@@ -22,30 +22,34 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
     @Override
     void update() {
         if (fields.hasNext()) {
-            var strategy = getProcessingStrategy(fields.next());
-            if (useParentNamePrefix)
-                strategy.setParamNamePrefix(paramNamePrefix);
-            stateMachine.addState(strategy);
-        }
-        else
+            var fieldMetadata = fields.next();
+            State state;
+            switch (fieldMetadata.getType()) {
+                case AUDIT_ENTITY:
+                    state = auditEntityStrategy(fieldMetadata);
+                    break;
+                case COLLECTION:
+                case MAP:
+                default:
+                    state = objectStrategy(fieldMetadata);
+                    break;
+            }
+            stateMachine.addState(state);
+        } else
             returnParams();
     }
 
-    private FieldProcessingStrategy getProcessingStrategy(FieldMetadata fieldMetadata) {
-        switch (fieldMetadata.getType()) {
-            case AUDIT_ENTITY:
-                return newAuditProcessingStrategy(fieldMetadata);
-            case COLLECTION:
-            case MAP:
-            default:
-                return new ObjectProcessingStrategy(fieldMetadata, entity);
-        }
+    private ObjectProcessingStrategy objectStrategy(FieldMetadata fieldMetadata) {
+        var strategy = new ObjectProcessingStrategy(fieldMetadata, entity);
+        if (useParentNamePrefix)
+            strategy.setParamNamePrefix(paramNamePrefix);
+        return strategy;
     }
 
-    private AuditEntityProcessingStrategy newAuditProcessingStrategy(FieldMetadata fieldMetadata) {
+    private AuditEntityProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
         var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), extractData(fieldMetadata, entity));
-        strategy.setParamNamePrefix(fieldMetadata.getParamName());
         strategy.setUseParentNamePrefix(true);
+        strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;
     }
 

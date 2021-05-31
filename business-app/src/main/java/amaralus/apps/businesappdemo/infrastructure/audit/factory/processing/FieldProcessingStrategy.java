@@ -39,7 +39,7 @@ public abstract class FieldProcessingStrategy extends State {
             ((FieldProcessingStrategy) currentState).addParams(params);
     }
 
-    private String updateName(String name) {
+    protected String updateName(String name) {
         return paramNamePrefix != null? paramNamePrefix + " | " + name : name;
     }
 
