@@ -24,11 +24,7 @@ public class ObjectProcessingStrategy extends FieldProcessingStrategy {
             throw new UnsupportedOperationException("state machine updating is unsupported");
 
         addParam(fieldMetadata.getParamName(), wrapNull(extractData(fieldMetadata, entity)));
-        stateMachine.removeState();
-
-        var currentState = stateMachine.getCurrent();
-        if (currentState != null)
-            ((FieldProcessingStrategy) currentState).addParams(params);
+        returnParams();
     }
 
     public Object process(FieldMetadata fieldMetadata, Object entity) {

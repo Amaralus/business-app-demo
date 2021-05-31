@@ -13,6 +13,8 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
     private final Object entity;
     private final Iterator<FieldMetadata> fields;
 
+    private boolean useParentNamePrefix;
+
     public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, Object entity) {
         this.entityMetadata = entityMetadata;
         this.entity = entity;
@@ -21,9 +23,17 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
 
     @Override
     void update() {
-        if (fields.hasNext())
-            stateMachine.addState(new ObjectProcessingStrategy(fields.next(), entity));
+        if (fields.hasNext()) {
+            var state = new ObjectProcessingStrategy(fields.next(), entity);
+            if (useParentNamePrefix)
+                state.setParamNamePrefix(paramNamePrefix);
+            stateMachine.addState(state);
+        }
         else
-            stateMachine.removeState();
+            returnParams();
+    }
+
+    public void setUseParentNamePrefix(boolean useParentNamePrefix) {
+        this.useParentNamePrefix = useParentNamePrefix;
     }
 }

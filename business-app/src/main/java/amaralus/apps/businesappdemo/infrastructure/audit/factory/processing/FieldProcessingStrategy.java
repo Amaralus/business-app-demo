@@ -10,6 +10,7 @@ import java.util.Map;
 public abstract class FieldProcessingStrategy extends State {
 
     protected Map<String, Object> params = new HashMap<>();
+    protected String paramNamePrefix;
 
     protected Object extractData(FieldMetadata fieldMetadata, Object targetObject) {
         try {
@@ -26,8 +27,20 @@ public abstract class FieldProcessingStrategy extends State {
         }
     }
 
-    protected void addParam(String key, Object value) {
-        params.put(key, value);
+    protected void addParam(String name, Object value) {
+        params.put(updateName(name), value);
+    }
+
+    protected void returnParams() {
+        stateMachine.removeState();
+
+        var currentState = stateMachine.getCurrent();
+        if (currentState != null)
+            ((FieldProcessingStrategy) currentState).addParams(params);
+    }
+
+    private String updateName(String name) {
+        return paramNamePrefix != null? paramNamePrefix + " -> " + name : name;
     }
 
     public void addParams(Map<String , Object> params) {
@@ -36,5 +49,9 @@ public abstract class FieldProcessingStrategy extends State {
 
     public Map<String, Object> getParams() {
         return params;
+    }
+
+    public void setParamNamePrefix(String paramNamePrefix) {
+        this.paramNamePrefix = paramNamePrefix;
     }
 }
