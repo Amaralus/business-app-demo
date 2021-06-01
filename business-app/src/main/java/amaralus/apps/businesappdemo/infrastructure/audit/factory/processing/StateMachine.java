@@ -27,7 +27,7 @@ public class StateMachine {
 
     public void executeAll() {
         while (!stateStack.isEmpty()) {
-            getCurrent().update();
+            getCurrent().execute();
         }
     }
 }

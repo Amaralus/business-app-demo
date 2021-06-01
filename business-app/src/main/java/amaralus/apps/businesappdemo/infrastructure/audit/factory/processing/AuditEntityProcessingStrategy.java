@@ -9,10 +9,10 @@ import java.util.Iterator;
 @Slf4j
 public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
 
-    private final Object entity;
-    private final Iterator<FieldMetadata> fields;
+    protected final Object entity;
+    protected final Iterator<FieldMetadata> fields;
 
-    private boolean useParentNamePrefix;
+    protected boolean useParentNamePrefix;
 
     public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, Object entity) {
         this.entity = entity;
@@ -20,7 +20,7 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
     }
 
     @Override
-    void update() {
+    void execute() {
         if (fields.hasNext()) {
             var fieldMetadata = fields.next();
             State state;
@@ -39,15 +39,19 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
             returnParams();
     }
 
-    private ObjectProcessingStrategy objectStrategy(FieldMetadata fieldMetadata) {
+    protected FieldProcessingStrategy objectStrategy(FieldMetadata fieldMetadata) {
         var strategy = new ObjectProcessingStrategy(fieldMetadata, entity);
         if (useParentNamePrefix)
             strategy.setParamNamePrefix(paramNamePrefix);
         return strategy;
     }
 
-    private AuditEntityProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
-        var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), extractData(fieldMetadata, entity));
+    protected FieldProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
+        var fieldValue = extractData(fieldMetadata, entity);
+        if (fieldValue == null)
+            return objectStrategy(fieldMetadata);
+
+        var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), fieldValue);
         strategy.setUseParentNamePrefix(true);
         strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;

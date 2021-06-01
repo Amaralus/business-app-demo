@@ -4,7 +4,7 @@ public abstract class State {
 
     protected StateMachine stateMachine;
 
-    abstract void update();
+    abstract void execute();
 
     void setStateMachine(StateMachine stateMachine) {
         this.stateMachine = stateMachine;

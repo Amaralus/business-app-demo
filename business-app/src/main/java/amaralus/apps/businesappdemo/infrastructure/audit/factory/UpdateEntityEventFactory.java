@@ -1,10 +1,9 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ObjectProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.AuditEntityDiffProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.StateMachine;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent.AuditLibraryEventBuilder;
-
-import java.util.Objects;
 
 public class UpdateEntityEventFactory implements EventFactory {
 
@@ -15,27 +14,18 @@ public class UpdateEntityEventFactory implements EventFactory {
                 "update" + eventData.getEntityMetadata().getEntityClass().getSimpleName(),
                 eventData.isSuccess());
 
-        var objectProcessingStrategy = new ObjectProcessingStrategy();
-        for (var metadata : eventData.getEntityMetadata().getFieldsMetadata()) {
-            // todo AuditEntity processing, collection processing, map processing
-            // пока что все воспринимаем как объект
-            var oldValue = objectProcessingStrategy.process(metadata, eventData.getOldAuditEntity());
-            var newValue = objectProcessingStrategy.process(metadata, eventData.getNewAuditEntity());
+        var stateMachine = new StateMachine();
 
-            var diff = getDiff(oldValue, newValue);
+        var entityStrategy = new AuditEntityDiffProcessingStrategy(
+                eventData.getEntityMetadata(),
+                eventData.getOldAuditEntity(),
+                eventData.getNewAuditEntity());
 
-            if (diff != null)
-                auditLibraryEventBuilder.param(metadata.getParamName(), diff);
-        }
+        stateMachine.addState(entityStrategy);
+        stateMachine.executeAll();
 
+        entityStrategy.getParams().forEach(auditLibraryEventBuilder::param);
         return auditLibraryEventBuilder.build();
-    }
-
-    private String getDiff(Object oldValue, Object newValue) {
-        if (Objects.equals(oldValue, newValue))
-            return null;
-        else
-            return oldValue + " -> " + newValue;
     }
 
     @Override

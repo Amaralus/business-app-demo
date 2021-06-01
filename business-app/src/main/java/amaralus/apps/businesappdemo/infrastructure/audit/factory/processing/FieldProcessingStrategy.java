@@ -13,6 +13,9 @@ public abstract class FieldProcessingStrategy extends State {
     protected String paramNamePrefix;
 
     protected Object extractData(FieldMetadata fieldMetadata, Object targetObject) {
+        if (targetObject == null)
+            return null;
+
         try {
             if (fieldMetadata.getGetterMethod() != null)
                 return fieldMetadata.getGetterMethod().invoke(targetObject);
