@@ -32,6 +32,9 @@ public class AlphaThetaLinkModel extends AbstractModel<String> implements Compos
 
     @Id
     @Column(name = "link_id", unique = true, nullable = false)
+    // использование  many-to-many через one-to-many и спринговых репозиториев
+    // позволяет использовать генератор в обычном режиме для линков
+    // в данно случае это излишне так как айдишники генрятся в ManyToManyLinkedModel
     @GeneratedValue(generator = "composite-generator")
     @GenericGenerator(name = "composite-generator", strategy = "amaralus.apps.businesappdemo.datasource.IdGenerator")
     private String linkId;
@@ -55,6 +58,8 @@ public class AlphaThetaLinkModel extends AbstractModel<String> implements Compos
             foreignKey = @ForeignKey(name = "fk_alphathetalink_thetaid_theta_thetaid"))
     private ThetaModel thetaModel;
 
+    // базом интерфесом у линка должны быть модели из которых будет создан линк
+    // генератор сам создаст айдишник
     public AlphaThetaLinkModel(AlphaModel alphaModel, ThetaModel thetaModel) {
         this.alphaModel = alphaModel;
         this.thetaModel = thetaModel;

@@ -32,6 +32,8 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
         log.info("Сохранение Alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
         var model = mapper.alphaToModel(alpha);
 
+        // так как теты приходят в виде сета строк, то сохраняем их отедельно в специальном методе
+        // и получаем назад сет моделей для сохраения линков
         var thetas = thetaCrudService.save(alpha.getThetas());
         model.setThetas(thetas);
 
@@ -39,6 +41,10 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
         return mapper.modelToAlpha(result.clearDeleted());
     }
 
+    // основное предназначение этого мтеода найти модель если она уже была
+    // и обновить ее и все вложенные модели через мерджер
+    // после этого сохрается обновленная модель так как она уже числится в контексте хибера
+    // что позволяет упростить сохранение и избежать ошибок
     private AlphaModel softSave(AlphaModel alphaModel){
         var founded = alphaRepository.getByIdIgnoreDeleted(alphaModel.getId());
         if (founded != null ) {
@@ -52,6 +58,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Override
     public Alpha getById(String id) {
         return alphaRepository.findById(id)
+                // так как вложеные сущности подтягиваются без учета флага удаления, то удаленные сущности нужно убрать
                 .map(alphaModel -> mapper.modelToAlpha(alphaModel.clearDeleted()))
                 .orElse(null);
     }
@@ -62,6 +69,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
         log.info("Удаление Alpha code=[{}]", id);
         try {
             alphaRepository.deleteById(id);
+            // метод генерирует экспеш когда нет записи в базе, потому его просто игнорируем
         } catch (EmptyResultDataAccessException ignored) {
             log.warn("Модель Aplha code=[{}] для удаления не найдена!", id);
         }

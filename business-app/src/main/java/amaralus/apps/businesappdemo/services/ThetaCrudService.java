@@ -12,6 +12,9 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+// Сохранение у тет отличается от обычных моделей,
+// потому имеет смысл сделать отедльный контракт без привязки к общему интерфейсу
+// сохраняются только сами теты, линки сохраняются через объект к которому они привязываются
 public class ThetaCrudService {
 
     private final ThetaRepository thetaRepository;

@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 @Aspect
 @Component
 @Slf4j
+// нужен только для адекватного тестирования
 public class ClearPersistenceContextAspect {
 
     private final EntityManager entityManager;
