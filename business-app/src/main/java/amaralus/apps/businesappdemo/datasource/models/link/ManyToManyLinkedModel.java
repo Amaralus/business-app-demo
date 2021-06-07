@@ -16,9 +16,10 @@ public interface ManyToManyLinkedModel {
         newLinks = new HashSet<>(newLinks);
 
         // чтобы persistence context контекст не ругался на добавление сущетвующей сущности
-        // нужно убрать из новых существующие и восстановить старык на случай если они удалены
+        // нужно убрать из новых существующие и восстановить старые на случай если они удалены
         // в итоге будут добавлятся только новые сущноти
         for (var oldLink : oldLinks)
+            // новая копия для новых линков чтобы обойти все и модифицировать пердыдущую копию
             for (var newLink : new HashSet<>(newLinks))
                 if (oldLink.getId().equals(newLink.getId())) {
                     newLinks.remove(newLink);

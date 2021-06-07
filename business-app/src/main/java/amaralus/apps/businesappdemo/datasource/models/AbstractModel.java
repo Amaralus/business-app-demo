@@ -24,6 +24,7 @@ public abstract class AbstractModel<I extends Serializable> {
     @Type(type = "yes_no")
     private boolean deleted = false;
 
+    // автоматичкое поднятие версии во время обновления сущнсоти
     @PreUpdate
     public void preUpdate() {
         rowVersion++;
@@ -37,6 +38,7 @@ public abstract class AbstractModel<I extends Serializable> {
 
     public abstract void setId(I id);
 
+    // дополнительные методы чтобы не использовать сеттер (удобно для reference link)
     public void delete() {
         deleted = true;
     }

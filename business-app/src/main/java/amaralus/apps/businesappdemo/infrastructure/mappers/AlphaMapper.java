@@ -54,6 +54,7 @@ public interface AlphaMapper {
                 .collect(Collectors.toSet());
     }
 
+    // генерация айдишников на уровне маппера
     @AfterMapping
     default void alphaModelAfterMapping(@MappingTarget AlphaModel alphaModel) {
         for (var versionModel : alphaModel.getAlphaVersionModels()) {

@@ -5,13 +5,12 @@ import amaralus.apps.businesappdemo.datasource.models.CompositeKey;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+// генератор не нужно делать бином, хибер сам создаст инстанс, а для соих нужд достаточно статики
 public class IdGenerator implements IdentifierGenerator {
 
     @Override
@@ -22,6 +21,7 @@ public class IdGenerator implements IdentifierGenerator {
         return generate((CompositeKey) object);
     }
 
+    // статический доступ по умолчанию для большего удобства использования
     public static <E extends AbstractModel<String> & CompositeKey> void generateId(E entity) {
         var id = generate(entity);
         entity.setId(id);
