@@ -9,13 +9,17 @@ public class EntityMetadata {
 
     private final Class<?> entityClass;
     private final String groupCode;
+    private final int walkDepth;
     private final List<FieldMetadata> fieldsMetadata;
     private final FieldMetadata idFieldMetadata;
 
     public EntityMetadata(Class<?> entityClass, List<FieldMetadata> fieldsMetadata) {
         this.entityClass = entityClass;
         this.fieldsMetadata = fieldsMetadata;
-        this.groupCode = entityClass.getAnnotation(AuditEntity.class).groupCode();
+
+        var annotation = entityClass.getAnnotation(AuditEntity.class);
+        this.groupCode = annotation.groupCode();
+        this.walkDepth = annotation.walkDepth();
         this.idFieldMetadata = fieldsMetadata.stream()
                 .filter(FieldMetadata::isIdField)
                 .findFirst()
@@ -28,6 +32,10 @@ public class EntityMetadata {
 
     public String getGroupCode() {
         return groupCode;
+    }
+
+    public int getWalkDepth() {
+        return walkDepth;
     }
 
     public List<FieldMetadata> getFieldsMetadata() {

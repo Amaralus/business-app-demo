@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.metadata;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditParam;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ public class AuditEntityValidator {
     private int paramsCount;
     private int idCount;
     private boolean lowPerformance;
+    private int walkDepth;
 
     public static boolean isValidEntity(Class<?> entityClass) {
         return new AuditEntityValidator(entityClass).validate();
@@ -38,10 +40,17 @@ public class AuditEntityValidator {
             return false;
         }
 
+        if (walkDepth < 0) {
+            log.debug("walk depth for entity [{}] must be greeter then 0!", entityClass.getName());
+            return false;
+        }
+
         return true;
     }
 
     private void extractValidationInfo() {
+        walkDepth = entityClass.getAnnotation(AuditEntity.class).walkDepth();
+
         for (var field : entityClass.getDeclaredFields()) {
             if (field.getAnnotation(AuditParam.class) != null) ++paramsCount;
 

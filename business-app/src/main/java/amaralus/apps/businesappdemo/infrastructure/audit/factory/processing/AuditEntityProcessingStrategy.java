@@ -10,12 +10,18 @@ import java.util.Iterator;
 public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
 
     protected final Object entity;
+    protected final int walkDepth;
     protected final Iterator<FieldMetadata> fields;
 
     protected boolean useParentNamePrefix;
 
     public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, Object entity) {
+        this(entityMetadata, entityMetadata.getWalkDepth(), entity);
+    }
+
+    public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, int walkDepth, Object entity) {
         this.entity = entity;
+        this.walkDepth = walkDepth;
         fields = entityMetadata.getFieldsMetadata().iterator();
     }
 
@@ -26,6 +32,8 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
             State state;
             switch (fieldMetadata.getType()) {
                 case AUDIT_ENTITY:
+                    if (walkDepth == 0)
+                        return;
                     state = auditEntityStrategy(fieldMetadata);
                     break;
                 case COLLECTION:
@@ -51,7 +59,7 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
         if (fieldValue == null)
             return objectStrategy(fieldMetadata);
 
-        var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), fieldValue);
+        var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), walkDepth - 1, fieldValue);
         strategy.setUseParentNamePrefix(true);
         strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;

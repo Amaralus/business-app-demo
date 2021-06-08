@@ -11,4 +11,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface AuditEntity {
 
     String groupCode() default "";
+
+    int walkDepth() default 1;
 }

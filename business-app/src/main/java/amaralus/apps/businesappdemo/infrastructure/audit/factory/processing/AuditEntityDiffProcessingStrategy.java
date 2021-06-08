@@ -17,6 +17,12 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
         this.oldEntity = oldEntity;
     }
 
+    public AuditEntityDiffProcessingStrategy(EntityMetadata entityMetadata, int walkDepth, Object oldEntity, Object entity) {
+        super(entityMetadata, walkDepth, entity);
+        this.idField = entityMetadata.getIdFieldMetadata();
+        this.oldEntity = oldEntity;
+    }
+
     @Override
     void execute() {
         if (oldEntity == null && entity == null) {
@@ -61,6 +67,7 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
     protected FieldProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
         var strategy = new AuditEntityDiffProcessingStrategy(
                 fieldMetadata.getEntityMetadataLink(),
+                walkDepth - 1,
                 extractData(fieldMetadata, oldEntity),
                 extractData(fieldMetadata, entity));
 
