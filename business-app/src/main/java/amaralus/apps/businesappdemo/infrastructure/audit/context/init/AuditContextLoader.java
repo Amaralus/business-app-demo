@@ -1,13 +1,11 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
-import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditParam;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -20,6 +18,7 @@ import java.util.Map;
 
 import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.AuditEntityValidator.isValidEntity;
 import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType.*;
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.MetadataUtil.*;
 
 @Slf4j
 public class AuditContextLoader {
@@ -74,27 +73,46 @@ public class AuditContextLoader {
         }
 
         var paramName = auditParam.name().isEmpty() ? fieldName : auditParam.name();
-        var getter = BeanUtils.getPropertyDescriptor(entityClass, fieldName).getReadMethod();
-        var idField = field.getAnnotation(AuditId.class) != null;
+        var getter = getGetter(field);
+        var idField = isAuditId(field);
         var fieldType = defineFieldType(field);
 
-        return new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
+        var fieldMetadata = new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
+
+        if (fieldType == MAP || fieldType == AUDIT_MAP) {
+            var keyGenericType = getFieldGenericType(field, 0);
+            if (String.class.isAssignableFrom(keyGenericType) || Number.class.isAssignableFrom(keyGenericType))
+                fieldMetadata.setMapKeyToStringMode(true);
+        }
+
+        return fieldMetadata;
     }
 
     private void fillMetadataLinks() {
         entitiesMetadata.values().stream()
                 .flatMap(entityMetadata -> entityMetadata.getFieldsMetadata().stream())
-                .filter(fieldMetadata -> fieldMetadata.getType() == AUDIT_ENTITY)
+                .filter(fieldMetadata -> isAuditType(fieldMetadata.getType()))
                 .forEach(fieldMetadata -> fieldMetadata.setEntityMetadataLink(entitiesMetadata.get(fieldMetadata.getFieldClass())));
+    }
+
+    private boolean isAuditType(FieldMetadataType type) {
+        return type == AUDIT_ENTITY || type == AUDIT_COLLECTION || type == AUDIT_MAP;
     }
 
     private FieldMetadataType defineFieldType(Field field) {
         var type = field.getType();
 
-        if (Collection.class.isAssignableFrom(type)) return COLLECTION;
-        if (Map.class.isAssignableFrom(type)) return MAP;
+        if (Collection.class.isAssignableFrom(type)) {
+            var genericType = getFieldGenericType(field, 0);
+            return isAuditEntity(genericType) ? AUDIT_COLLECTION : COLLECTION;
+        }
 
-        if (type.getAnnotation(AuditEntity.class) != null)
+        if (Map.class.isAssignableFrom(type)) {
+            var valueGenericType = getFieldGenericType(field, 1);
+            return isAuditEntity(valueGenericType) ? AUDIT_MAP : MAP;
+        }
+
+        if (isAuditEntity(type))
             return AUDIT_ENTITY;
         else
             return OBJECT;

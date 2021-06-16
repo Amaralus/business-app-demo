@@ -1,10 +1,9 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.metadata;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.AuditEntity;
-import amaralus.apps.businesappdemo.infrastructure.audit.AuditId;
-import amaralus.apps.businesappdemo.infrastructure.audit.AuditParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.MetadataUtil.*;
 
 @Slf4j
 public class AuditEntityValidator {
@@ -52,13 +51,11 @@ public class AuditEntityValidator {
         walkDepth = entityClass.getAnnotation(AuditEntity.class).walkDepth();
 
         for (var field : entityClass.getDeclaredFields()) {
-            if (field.getAnnotation(AuditParam.class) != null) ++paramsCount;
+            if (isAuditParam(field)) ++paramsCount;
 
-            var idField = field.getAnnotation(AuditId.class) != null;
+            if (isAuditId(field)) ++idCount;
 
-            if (idField) ++idCount;
-
-            var getter = BeanUtils.getPropertyDescriptor(entityClass, field.getName()).getReadMethod();
+            var getter = getGetter(field);
             if (getter == null) {
                 lowPerformance = true;
                 log.debug("Getter must exist for field [{}] to improve performance", field.getName());

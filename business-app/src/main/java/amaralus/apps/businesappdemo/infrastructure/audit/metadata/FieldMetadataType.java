@@ -4,5 +4,7 @@ public enum FieldMetadataType {
     OBJECT,
     AUDIT_ENTITY,
     COLLECTION,
-    MAP
+    AUDIT_COLLECTION,
+    MAP,
+    AUDIT_MAP
 }

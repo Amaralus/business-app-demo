@@ -16,6 +16,7 @@ public class FieldMetadata {
     private final boolean idField;
 
     private EntityMetadata entityMetadataLink;
+    private boolean mapKeyToStringMode;
 
     public FieldMetadata(Class<?> entityClass, String name, String paramName, Class<?> fieldClass, FieldMetadataType type, Method getterMethod, boolean idField) {
         this.entityClass = entityClass;
@@ -61,5 +62,13 @@ public class FieldMetadata {
 
     public EntityMetadata getEntityMetadataLink() {
         return entityMetadataLink;
+    }
+
+    public boolean isMapKeyToStringMode() {
+        return mapKeyToStringMode;
+    }
+
+    public void setMapKeyToStringMode(boolean mapKeyToStringMode) {
+        this.mapKeyToStringMode = mapKeyToStringMode;
     }
 }
