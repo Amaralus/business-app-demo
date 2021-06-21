@@ -41,7 +41,6 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
                 case AUDIT_COLLECTION:
                     state = collectionProcessingStrategy(fieldMetadata);
                     break;
-                case MAP:
                 default:
                     state = objectStrategy(fieldMetadata);
                     break;

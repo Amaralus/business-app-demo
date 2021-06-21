@@ -77,15 +77,7 @@ public class AuditContextLoader {
         var idField = isAuditId(field);
         var fieldType = defineFieldType(field);
 
-        var fieldMetadata = new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
-
-        if (fieldType == MAP || fieldType == AUDIT_MAP) {
-            var keyGenericType = getFieldGenericType(field, 0);
-            if (String.class.isAssignableFrom(keyGenericType) || Number.class.isAssignableFrom(keyGenericType))
-                fieldMetadata.setMapKeyToStringMode(true);
-        }
-
-        return fieldMetadata;
+        return new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
     }
 
     private void fillMetadataLinks() {
@@ -101,15 +93,13 @@ public class AuditContextLoader {
                 return entitiesMetadata.get(fieldMetadata.getFieldClass());
             case AUDIT_COLLECTION:
                 return entitiesMetadata.get(getFieldGenericType(toField(fieldMetadata), 0));
-            case AUDIT_MAP:
-                return entitiesMetadata.get(getFieldGenericType(toField(fieldMetadata), 1));
             default:
                 return null;
         }
     }
 
     private boolean isAuditType(FieldMetadataType type) {
-        return type == AUDIT_ENTITY || type == AUDIT_COLLECTION || type == AUDIT_MAP;
+        return type == AUDIT_ENTITY || type == AUDIT_COLLECTION;
     }
 
     private FieldMetadataType defineFieldType(Field field) {
@@ -118,11 +108,6 @@ public class AuditContextLoader {
         if (Collection.class.isAssignableFrom(type)) {
             var genericType = getFieldGenericType(field, 0);
             return isAuditEntity(genericType) ? AUDIT_COLLECTION : COLLECTION;
-        }
-
-        if (Map.class.isAssignableFrom(type)) {
-            var valueGenericType = getFieldGenericType(field, 1);
-            return isAuditEntity(valueGenericType) ? AUDIT_MAP : MAP;
         }
 
         if (isAuditEntity(type))
