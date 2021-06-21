@@ -52,7 +52,7 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
     }
 
     @Override
-    protected FieldProcessingStrategy objectStrategy(FieldMetadata fieldMetadata) {
+    protected State objectStrategy(FieldMetadata fieldMetadata) {
         return diffObjectStrategy(fieldMetadata, oldEntity, entity);
     }
 
@@ -64,7 +64,7 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
     }
 
     @Override
-    protected FieldProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
+    protected State auditEntityStrategy(FieldMetadata fieldMetadata) {
         var strategy = new AuditEntityDiffProcessingStrategy(
                 fieldMetadata.getEntityMetadataLink(),
                 walkDepth - 1,

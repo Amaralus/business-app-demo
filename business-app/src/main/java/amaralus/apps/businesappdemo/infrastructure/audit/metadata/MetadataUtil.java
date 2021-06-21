@@ -33,4 +33,12 @@ public final class MetadataUtil {
         var type = (ParameterizedType) field.getGenericType();
         return (Class<?>) type.getActualTypeArguments()[genericNumber];
     }
+
+    public static Field toField(FieldMetadata fieldMetadata) {
+        try {
+            return fieldMetadata.getEntityClass().getDeclaredField(fieldMetadata.getName());
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("Invalid field metadata:", e);
+        }
+    }
 }

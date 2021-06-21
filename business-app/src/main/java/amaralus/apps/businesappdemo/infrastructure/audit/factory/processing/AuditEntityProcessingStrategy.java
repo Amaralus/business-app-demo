@@ -4,6 +4,7 @@ import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 @Slf4j
@@ -37,6 +38,9 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
                     state = auditEntityStrategy(fieldMetadata);
                     break;
                 case COLLECTION:
+                case AUDIT_COLLECTION:
+                    state = collectionProcessingStrategy(fieldMetadata);
+                    break;
                 case MAP:
                 default:
                     state = objectStrategy(fieldMetadata);
@@ -47,20 +51,27 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
             returnParams();
     }
 
-    protected FieldProcessingStrategy objectStrategy(FieldMetadata fieldMetadata) {
+    protected State objectStrategy(FieldMetadata fieldMetadata) {
         var strategy = new ObjectProcessingStrategy(fieldMetadata, entity);
         if (useParentNamePrefix)
             strategy.setParamNamePrefix(paramNamePrefix);
         return strategy;
     }
 
-    protected FieldProcessingStrategy auditEntityStrategy(FieldMetadata fieldMetadata) {
+    protected State auditEntityStrategy(FieldMetadata fieldMetadata) {
         var fieldValue = extractData(fieldMetadata, entity);
         if (fieldValue == null)
             return objectStrategy(fieldMetadata);
 
         var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), walkDepth - 1, fieldValue);
         strategy.setUseParentNamePrefix(true);
+        strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
+        return strategy;
+    }
+
+    // todo diff collections
+    protected State collectionProcessingStrategy(FieldMetadata fieldMetadata) {
+        var strategy = new CollectionProcessingStrategy(fieldMetadata, (Collection<Object>) extractData(fieldMetadata, entity));
         strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;
     }

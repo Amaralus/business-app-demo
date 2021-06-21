@@ -92,7 +92,20 @@ public class AuditContextLoader {
         entitiesMetadata.values().stream()
                 .flatMap(entityMetadata -> entityMetadata.getFieldsMetadata().stream())
                 .filter(fieldMetadata -> isAuditType(fieldMetadata.getType()))
-                .forEach(fieldMetadata -> fieldMetadata.setEntityMetadataLink(entitiesMetadata.get(fieldMetadata.getFieldClass())));
+                .forEach(fieldMetadata -> fieldMetadata.setEntityMetadataLink(getActualMetadata(fieldMetadata)));
+    }
+
+    private EntityMetadata getActualMetadata(FieldMetadata fieldMetadata) {
+        switch (fieldMetadata.getType()) {
+            case AUDIT_ENTITY:
+                return entitiesMetadata.get(fieldMetadata.getFieldClass());
+            case AUDIT_COLLECTION:
+                return entitiesMetadata.get(getFieldGenericType(toField(fieldMetadata), 0));
+            case AUDIT_MAP:
+                return entitiesMetadata.get(getFieldGenericType(toField(fieldMetadata), 1));
+            default:
+                return null;
+        }
     }
 
     private boolean isAuditType(FieldMetadataType type) {

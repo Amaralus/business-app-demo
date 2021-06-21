@@ -46,6 +46,10 @@ public abstract class FieldProcessingStrategy extends State {
         return paramNamePrefix != null? paramNamePrefix + " | " + name : name;
     }
 
+    protected Object wrapNull(Object object) {
+        return object == null ? "null": object;
+    }
+
     public void addParams(Map<String , Object> params) {
         this.params.putAll(params);
     }

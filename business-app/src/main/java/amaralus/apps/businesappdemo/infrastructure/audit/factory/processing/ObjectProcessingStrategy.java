@@ -19,8 +19,4 @@ public class ObjectProcessingStrategy extends FieldProcessingStrategy {
         addParam(fieldMetadata.getParamName(), wrapNull(extractData(fieldMetadata, entity)));
         returnParams();
     }
-
-    protected Object wrapNull(Object object) {
-        return object == null ? "null": object;
-    }
 }
