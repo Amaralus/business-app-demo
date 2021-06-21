@@ -2,8 +2,8 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.aud
 
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.CollectionProcessingStrategy;
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.CollectionProcessing;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Slf4j
-public class AuditEntityProcessingStrategy extends ProcessingStrategy {
+public class AuditEntityProcessing extends ProcessingStrategy {
 
     protected final Object entity;
     protected final int walkDepth;
@@ -20,11 +20,11 @@ public class AuditEntityProcessingStrategy extends ProcessingStrategy {
 
     protected boolean useParentNamePrefix;
 
-    public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, Object entity) {
+    public AuditEntityProcessing(EntityMetadata entityMetadata, Object entity) {
         this(entityMetadata, entityMetadata.getWalkDepth(), entity);
     }
 
-    public AuditEntityProcessingStrategy(EntityMetadata entityMetadata, int walkDepth, Object entity) {
+    public AuditEntityProcessing(EntityMetadata entityMetadata, int walkDepth, Object entity) {
         this.entity = entity;
         this.walkDepth = walkDepth;
         fields = entityMetadata.getFieldsMetadata().iterator();
@@ -55,7 +55,7 @@ public class AuditEntityProcessingStrategy extends ProcessingStrategy {
     }
 
     protected State objectStrategy(FieldMetadata fieldMetadata) {
-        var strategy = new ObjectProcessingStrategy(fieldMetadata, entity);
+        var strategy = new ObjectProcessing(fieldMetadata, entity);
         if (useParentNamePrefix)
             strategy.setParamNamePrefix(paramNamePrefix);
         return strategy;
@@ -66,7 +66,7 @@ public class AuditEntityProcessingStrategy extends ProcessingStrategy {
         if (fieldValue == null)
             return objectStrategy(fieldMetadata);
 
-        var strategy = new AuditEntityProcessingStrategy(fieldMetadata.getEntityMetadataLink(), walkDepth - 1, fieldValue);
+        var strategy = new AuditEntityProcessing(fieldMetadata.getEntityMetadataLink(), walkDepth - 1, fieldValue);
         strategy.setUseParentNamePrefix(true);
         strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;
@@ -74,7 +74,7 @@ public class AuditEntityProcessingStrategy extends ProcessingStrategy {
 
     // todo diff collections
     protected State collectionProcessingStrategy(FieldMetadata fieldMetadata) {
-        var strategy = new CollectionProcessingStrategy(fieldMetadata, (Collection<Object>) extractData(fieldMetadata, entity));
+        var strategy = new CollectionProcessing(fieldMetadata, (Collection<Object>) extractData(fieldMetadata, entity));
         strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
         return strategy;
     }

@@ -2,9 +2,9 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.obj
 
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 
-public class ObjectSimpleProcessingStrategy extends ObjectProcessingStrategy {
+public class ObjectSimpleProcessing extends ObjectProcessing {
 
-    public ObjectSimpleProcessingStrategy() {
+    public ObjectSimpleProcessing() {
         super(null, null);
     }
 

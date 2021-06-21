@@ -3,14 +3,12 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.obj
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
-
 @Slf4j
-public class ObjectDiffProcessingStrategy extends ObjectProcessingStrategy {
+public class ObjectDiffProcessing extends ObjectProcessing {
 
     private final Object oldEntity;
 
-    public ObjectDiffProcessingStrategy(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
+    public ObjectDiffProcessing(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
         super(fieldMetadata, entity);
         this.oldEntity = oldEntity;
     }
@@ -28,12 +26,5 @@ public class ObjectDiffProcessingStrategy extends ObjectProcessingStrategy {
         else
             // обычные поля пропускаются
             stateMachine.removeState();
-    }
-
-    private String getDiff(Object oldValue, Object newValue) {
-        if (Objects.equals(oldValue, newValue))
-            return null;
-        else
-            return oldValue + " -> " + newValue;
     }
 }

@@ -5,12 +5,12 @@ import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ObjectProcessingStrategy extends ProcessingStrategy {
+public class ObjectProcessing extends ProcessingStrategy {
 
     protected final FieldMetadata fieldMetadata;
     protected final Object entity;
 
-    public ObjectProcessingStrategy(FieldMetadata fieldMetadata, Object entity) {
+    public ObjectProcessing(FieldMetadata fieldMetadata, Object entity) {
         this.fieldMetadata = fieldMetadata;
         this.entity = entity;
     }

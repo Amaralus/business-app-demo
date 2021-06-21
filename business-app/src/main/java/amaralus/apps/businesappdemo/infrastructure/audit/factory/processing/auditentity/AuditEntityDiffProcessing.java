@@ -1,11 +1,11 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.auditentity;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectDiffProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectDiffProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 
-public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStrategy {
+public class AuditEntityDiffProcessing extends AuditEntityProcessing {
 
     private final Object oldEntity;
     private final FieldMetadata idField;
@@ -13,13 +13,13 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
     private boolean deepDiff;
     private boolean idExtracted;
 
-    public AuditEntityDiffProcessingStrategy(EntityMetadata entityMetadata, Object oldEntity, Object entity) {
+    public AuditEntityDiffProcessing(EntityMetadata entityMetadata, Object oldEntity, Object entity) {
         super(entityMetadata, entity);
         this.idField = entityMetadata.getIdFieldMetadata();
         this.oldEntity = oldEntity;
     }
 
-    public AuditEntityDiffProcessingStrategy(EntityMetadata entityMetadata, int walkDepth, Object oldEntity, Object entity) {
+    public AuditEntityDiffProcessing(EntityMetadata entityMetadata, int walkDepth, Object oldEntity, Object entity) {
         super(entityMetadata, walkDepth, entity);
         this.idField = entityMetadata.getIdFieldMetadata();
         this.oldEntity = oldEntity;
@@ -58,8 +58,8 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
         return diffObjectStrategy(fieldMetadata, oldEntity, entity);
     }
 
-    private ObjectDiffProcessingStrategy diffObjectStrategy(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
-        var strategy = new ObjectDiffProcessingStrategy(fieldMetadata, oldEntity, entity);
+    private ObjectDiffProcessing diffObjectStrategy(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
+        var strategy = new ObjectDiffProcessing(fieldMetadata, oldEntity, entity);
         if (useParentNamePrefix)
             strategy.setParamNamePrefix(paramNamePrefix);
         return strategy;
@@ -67,7 +67,7 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
 
     @Override
     protected State auditEntityStrategy(FieldMetadata fieldMetadata) {
-        var strategy = new AuditEntityDiffProcessingStrategy(
+        var strategy = new AuditEntityDiffProcessing(
                 fieldMetadata.getEntityMetadataLink(),
                 walkDepth - 1,
                 extractData(fieldMetadata, oldEntity),

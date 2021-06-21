@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public abstract class ProcessingStrategy extends State {
@@ -28,6 +29,13 @@ public abstract class ProcessingStrategy extends State {
             log.warn("Unsuccessful data extraction from field [" + fieldMetadata.getName() + "]", e);
             return "DATA EXTRACTION ERROR";
         }
+    }
+
+    protected String getDiff(Object oldValue, Object newValue) {
+        if (Objects.equals(oldValue, newValue))
+            return null;
+        else
+            return oldValue + " -> " + newValue;
     }
 
     protected void addParam(String name, Object value) {
