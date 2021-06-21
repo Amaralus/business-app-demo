@@ -1,7 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.AuditEntityDiffProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.StateMachine;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.auditentity.AuditEntityDiffProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent.AuditLibraryEventBuilder;
 

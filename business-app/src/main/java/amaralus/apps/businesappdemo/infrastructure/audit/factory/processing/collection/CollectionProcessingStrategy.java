@@ -1,5 +1,8 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing;
+package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 
 import java.util.Collection;
@@ -7,7 +10,7 @@ import java.util.Iterator;
 
 import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadataType.AUDIT_COLLECTION;
 
-public class CollectionProcessingStrategy extends FieldProcessingStrategy {
+public class CollectionProcessingStrategy extends ProcessingStrategy {
 
     private final FieldMetadata collectionMetadata;
     private final Iterator<Object> entities;
@@ -22,7 +25,7 @@ public class CollectionProcessingStrategy extends FieldProcessingStrategy {
     }
 
     @Override
-    void execute() {
+    public void execute() {
         if (entities.hasNext()) {
             var state = getState(entities.next());
             if (state != null)

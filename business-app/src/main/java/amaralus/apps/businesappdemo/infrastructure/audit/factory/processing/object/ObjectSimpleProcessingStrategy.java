@@ -1,4 +1,4 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing;
+package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 

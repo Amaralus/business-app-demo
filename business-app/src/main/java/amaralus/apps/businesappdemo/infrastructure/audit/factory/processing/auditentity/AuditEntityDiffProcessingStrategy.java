@@ -1,5 +1,7 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing;
+package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.auditentity;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectDiffProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 
@@ -24,7 +26,7 @@ public class AuditEntityDiffProcessingStrategy extends  AuditEntityProcessingStr
     }
 
     @Override
-    void execute() {
+    public void execute() {
         if (oldEntity == null && entity == null) {
             stateMachine.removeState();
             return;

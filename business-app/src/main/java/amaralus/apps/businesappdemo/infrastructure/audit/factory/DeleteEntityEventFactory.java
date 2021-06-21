@@ -1,6 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ObjectSimpleProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectSimpleProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
 public class DeleteEntityEventFactory implements EventFactory {

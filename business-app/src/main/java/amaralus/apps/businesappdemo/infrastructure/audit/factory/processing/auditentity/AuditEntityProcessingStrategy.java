@@ -1,5 +1,9 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing;
+package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.auditentity;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.CollectionProcessingStrategy;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Slf4j
-public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
+public class AuditEntityProcessingStrategy extends ProcessingStrategy {
 
     protected final Object entity;
     protected final int walkDepth;
@@ -27,7 +31,7 @@ public class AuditEntityProcessingStrategy extends FieldProcessingStrategy {
     }
 
     @Override
-    void execute() {
+    public void execute() {
         if (fields.hasNext()) {
             var fieldMetadata = fields.next();
             State state;

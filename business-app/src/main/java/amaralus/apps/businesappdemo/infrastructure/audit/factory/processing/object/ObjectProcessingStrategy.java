@@ -1,10 +1,11 @@
-package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing;
+package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.ProcessingStrategy;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ObjectProcessingStrategy extends FieldProcessingStrategy {
+public class ObjectProcessingStrategy extends ProcessingStrategy {
 
     protected final FieldMetadata fieldMetadata;
     protected final Object entity;

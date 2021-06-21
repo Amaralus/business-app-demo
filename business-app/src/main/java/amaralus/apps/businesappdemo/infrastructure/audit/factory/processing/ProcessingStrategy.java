@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public abstract class FieldProcessingStrategy extends State {
+public abstract class ProcessingStrategy extends State {
 
     protected Map<String, Object> params = new HashMap<>();
     protected String paramNamePrefix;
@@ -39,7 +39,7 @@ public abstract class FieldProcessingStrategy extends State {
 
         var currentState = stateMachine.getCurrent();
         if (currentState != null)
-            ((FieldProcessingStrategy) currentState).addParams(params);
+            ((ProcessingStrategy) currentState).addParams(params);
     }
 
     protected String updateName(String name) {
