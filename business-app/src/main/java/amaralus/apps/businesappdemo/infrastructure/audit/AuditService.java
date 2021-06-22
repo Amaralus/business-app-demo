@@ -1,6 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit;
 
-import amaralus.apps.businesappdemo.infrastructure.audit.context.AuditContext;
+import amaralus.apps.businesappdemo.infrastructure.audit.context.LocalAuditContext;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventData;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
@@ -16,11 +16,11 @@ import static amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFac
 @Slf4j
 public class AuditService {
 
-    private final AuditContext auditContext;
+    private final LocalAuditContext localAuditContext;
     private final AuditLibraryServiceStub auditLibraryServiceStub;
 
-    public AuditService(AuditContext auditContext, AuditLibraryServiceStub auditLibraryServiceStub) {
-        this.auditContext = auditContext;
+    public AuditService(LocalAuditContext localAuditContext, AuditLibraryServiceStub auditLibraryServiceStub) {
+        this.localAuditContext = localAuditContext;
         this.auditLibraryServiceStub = auditLibraryServiceStub;
     }
 
@@ -87,15 +87,15 @@ public class AuditService {
                     return;
                 }
 
-                if (!auditContext.containsMetadata(eventData.getNewAuditEntity().getClass())) {
+                if (!localAuditContext.containsMetadata(eventData.getNewAuditEntity().getClass())) {
                     log.warn("Нет метамодели для сущности [{}]", eventData.getNewAuditEntity().getClass().getName());
                     return;
                 }
-                var entityMetadata = auditContext.getMetadata(eventData.getNewAuditEntity().getClass());
+                var entityMetadata = localAuditContext.getMetadata(eventData.getNewAuditEntity().getClass());
                 eventData.setEntityMetadata(entityMetadata);
             }
 
-            event = auditContext.getEventFactory(getFactoryType()).produce(eventData);
+            event = localAuditContext.getEventFactory(getFactoryType()).produce(eventData);
         }
 
         private EventFactory.Type getFactoryType() {

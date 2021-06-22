@@ -1,7 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.EnableAuditEntityManagement;
-import amaralus.apps.businesappdemo.infrastructure.audit.context.EntitySupportedAuditContext;
+import amaralus.apps.businesappdemo.infrastructure.audit.context.EntitySupportedLocalAuditContext;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.CreateEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.DeleteEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
@@ -24,11 +24,11 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
         contextLoader.loadAuditContextMetadata();
 
         var beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(EntitySupportedAuditContext.class);
+        beanDefinition.setBeanClass(EntitySupportedLocalAuditContext.class);
         beanDefinition.setPrimary(true);
         beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, contextLoader.getEntitiesMetadata());
 
-        registry.registerBeanDefinition(StringUtils.uncapitalize(EntitySupportedAuditContext.class.getSimpleName()), beanDefinition);
+        registry.registerBeanDefinition(StringUtils.uncapitalize(EntitySupportedLocalAuditContext.class.getSimpleName()), beanDefinition);
 
         registerFactory(registry, CreateEntityEventFactory.class);
         registerFactory(registry, UpdateEntityEventFactory.class);

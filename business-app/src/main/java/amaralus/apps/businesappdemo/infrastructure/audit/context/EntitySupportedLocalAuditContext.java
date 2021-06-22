@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EntitySupportedAuditContext implements AuditContext {
+public class EntitySupportedLocalAuditContext implements LocalAuditContext {
 
     private final Map<Class<?>, EntityMetadata> entitiesMetadata = new ConcurrentHashMap<>();
     private final Map<EventFactory.Type, EventFactory> factories = new ConcurrentHashMap<>();
 
-    public EntitySupportedAuditContext(Map<Class<?>, EntityMetadata> entitiesMetadata, List<EventFactory> eventFactoryList) {
+    public EntitySupportedLocalAuditContext(Map<Class<?>, EntityMetadata> entitiesMetadata, List<EventFactory> eventFactoryList) {
         this.entitiesMetadata.putAll(entitiesMetadata);
         eventFactoryList.forEach(factory -> factories.put(factory.getFactoryType(), factory));
     }

@@ -7,11 +7,11 @@ import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultAuditContext implements AuditContext {
+public class DefaultLocalAuditContext implements LocalAuditContext {
 
     private final DefaultEventFactory defaultEventFactory;
 
-    public DefaultAuditContext(DefaultEventFactory defaultEventFactory) {
+    public DefaultLocalAuditContext(DefaultEventFactory defaultEventFactory) {
         this.defaultEventFactory = defaultEventFactory;
     }
 
