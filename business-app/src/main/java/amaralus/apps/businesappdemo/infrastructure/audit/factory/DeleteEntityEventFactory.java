@@ -3,13 +3,15 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectSimpleProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.MetadataUtil.getEventCode;
+
 public class DeleteEntityEventFactory implements EventFactory {
 
     @Override
     public AuditLibraryEvent produce(EventData eventData) {
         var auditLibraryEventBuilder = new AuditLibraryEvent.AuditLibraryEventBuilder(
                 eventData.getEntityMetadata().getGroupCode(),
-                "delete" + eventData.getEntityMetadata().getEntityClass().getSimpleName(),
+                getEventCode("delete", eventData.getEntityMetadata().getEntityClass()),
                 eventData.isSuccess());
 
         var idField = eventData.getEntityMetadata().getIdFieldMetadata();

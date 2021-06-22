@@ -9,6 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+
 public final class MetadataUtil {
 
     private MetadataUtil() {}
@@ -32,6 +35,10 @@ public final class MetadataUtil {
     public static Class<?> getFieldGenericType(Field field, int genericNumber) {
         var type = (ParameterizedType) field.getGenericType();
         return (Class<?>) type.getActualTypeArguments()[genericNumber];
+    }
+
+    public static String getEventCode(String prefix, Class<?> entityClass) {
+       return LOWER_CAMEL.to(UPPER_UNDERSCORE, prefix + entityClass.getSimpleName());
     }
 
     public static Field toField(FieldMetadata fieldMetadata) {

@@ -5,13 +5,15 @@ import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.audi
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent.AuditLibraryEventBuilder;
 
+import static amaralus.apps.businesappdemo.infrastructure.audit.metadata.MetadataUtil.getEventCode;
+
 public class UpdateEntityEventFactory implements EventFactory {
 
     @Override
     public AuditLibraryEvent produce(EventData eventData) {
         var auditLibraryEventBuilder = new AuditLibraryEventBuilder(
                 eventData.getEntityMetadata().getGroupCode(),
-                "update" + eventData.getEntityMetadata().getEntityClass().getSimpleName(),
+                getEventCode("update", eventData.getEntityMetadata().getEntityClass()),
                 eventData.isSuccess());
 
         var stateMachine = new StateMachine();
