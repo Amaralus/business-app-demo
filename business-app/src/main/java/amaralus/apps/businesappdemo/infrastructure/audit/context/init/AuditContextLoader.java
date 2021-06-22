@@ -73,11 +73,14 @@ public class AuditContextLoader {
         }
 
         var paramName = auditParam.name().isEmpty() ? fieldName : auditParam.name();
+        var mandatory = auditParam.mandatory();
         var getter = getGetter(field);
         var idField = isAuditId(field);
         var fieldType = defineFieldType(field);
 
-        return new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
+        var fieldMetadata = new FieldMetadata(entityClass, fieldName, paramName, field.getType(), fieldType, getter, idField);
+        fieldMetadata.setMandatory(mandatory);
+        return fieldMetadata;
     }
 
     private void fillMetadataLinks() {

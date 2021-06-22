@@ -11,4 +11,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface AuditParam {
 
     String name() default "";
+    
+    boolean mandatory() default false;
 }

@@ -15,6 +15,7 @@ public class FieldMetadata {
     private final Method getterMethod;
     private final boolean idField;
 
+    private boolean mandatory;
     private EntityMetadata entityMetadataLink;
     private boolean mapKeyToStringMode;
 
@@ -70,5 +71,13 @@ public class FieldMetadata {
 
     public void setMapKeyToStringMode(boolean mapKeyToStringMode) {
         this.mapKeyToStringMode = mapKeyToStringMode;
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
     }
 }

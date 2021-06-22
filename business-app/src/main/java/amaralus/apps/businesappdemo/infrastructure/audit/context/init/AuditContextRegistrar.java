@@ -2,10 +2,12 @@ package amaralus.apps.businesappdemo.infrastructure.audit.context.init;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.EnableAuditEntityManagement;
 import amaralus.apps.businesappdemo.infrastructure.audit.context.EntitySupportedLocalAuditContext;
+import amaralus.apps.businesappdemo.infrastructure.audit.context.metamodel.AuditMetamodel;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.CreateEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.DeleteEntityEventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.UpdateEntityEventFactory;
+import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -13,6 +15,8 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardClassMetadata;
 import org.springframework.util.StringUtils;
+
+import java.util.Map;
 
 @Slf4j
 public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
@@ -33,6 +37,16 @@ public class AuditContextRegistrar implements ImportBeanDefinitionRegistrar {
         registerFactory(registry, CreateEntityEventFactory.class);
         registerFactory(registry, UpdateEntityEventFactory.class);
         registerFactory(registry, DeleteEntityEventFactory.class);
+
+        registerMetamodel(registry, contextLoader.getEntitiesMetadata());
+    }
+
+    private void registerMetamodel(BeanDefinitionRegistry registry, Map<Class<?>, EntityMetadata> metadataMap) {
+        var beanDefinition = new GenericBeanDefinition();
+        beanDefinition.setBeanClass(AuditMetamodel.class);
+        beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, metadataMap.values());
+
+        registry.registerBeanDefinition(StringUtils.uncapitalize(AuditMetamodel.class.getSimpleName()), beanDefinition);
     }
 
     private void registerFactory(BeanDefinitionRegistry registry, Class<? extends EventFactory> factoryClass) {
