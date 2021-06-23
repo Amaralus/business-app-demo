@@ -9,6 +9,7 @@ import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditSendException
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -76,30 +77,31 @@ public class AuditService {
         }
 
         public EventSender groupCode(String groupCode) {
-            eventData.setGroupCode(groupCode);
+            eventData.setGroupCode(Objects.requireNonNull(groupCode));
             return this;
         }
 
         public EventSender eventCode(String eventCode) {
-            eventData.setEventCode(eventCode);
+            eventData.setEventCode(Objects.requireNonNull(eventCode));
             return this;
         }
 
         public EventSender contextUuid(UUID auditContextUUID) {
-            eventData.setAuditContextUuid(auditContextUUID);
+            if (auditContextUUID != null)
+                eventData.setAuditContextUuid(auditContextUUID);
             return this;
         }
 
         public EventSender param(String name, Object value) {
-            eventData.addParam(name, value.toString());
+            eventData.addParam(Objects.requireNonNull(name), value == null ? null : value.toString());
             return this;
         }
 
         public EventSender entity(Object auditEntity) {
-            return entity(auditEntity, null);
+            return entity(null, auditEntity);
         }
 
-        public EventSender entity(Object newAuditEntity, Object oldAuditEntity) {
+        public EventSender entity(Object oldAuditEntity, Object newAuditEntity) {
             eventData.setNewAuditEntity(newAuditEntity);
             eventData.setOldAuditEntity(oldAuditEntity);
             return this;
@@ -134,6 +136,9 @@ public class AuditService {
                 }
                 var entityMetadata = localAuditContext.getMetadata(eventData.getNewAuditEntity().getClass());
                 eventData.setEntityMetadata(entityMetadata);
+            } else if (eventData.getGroupCode() == null || eventData.getEventCode() == null) {
+                log.warn("Не заполнено обязательное поле события: [{}]", eventData.getGroupCode() == null ? "groupCode" : "eventCode");
+                return;
             }
 
             event = localAuditContext.getEventFactory(getFactoryType()).produce(eventData);

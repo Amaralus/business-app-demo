@@ -55,7 +55,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
         var result = softSave(model);
         var saved = mapper.modelToAlpha(result.clearDeleted());
         auditService.successEvent(EventType.SAVE_ENTITY)
-                .entity(alpha, old)
+                .entity(old, alpha)
                 .send();
         return saved;
     }
