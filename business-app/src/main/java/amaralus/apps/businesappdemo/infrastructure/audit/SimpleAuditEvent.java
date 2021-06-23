@@ -28,4 +28,24 @@ public enum SimpleAuditEvent {
     public List<String> getParams() {
         return params;
     }
+
+    public String getParam(int paramNumber) {
+        try {
+            return params.get(paramNumber);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Parameter with number " + paramNumber + "doesn't exist!");
+        }
+    }
+
+    public String firstParam() {
+        return getParam(0);
+    }
+
+    public String secondParam() {
+        return getParam(1);
+    }
+
+    public String thirdParam() {
+        return getParam(2);
+    }
 }

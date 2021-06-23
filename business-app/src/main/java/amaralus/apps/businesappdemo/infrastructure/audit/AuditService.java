@@ -5,11 +5,13 @@ import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventData;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditLibraryServiceStub;
+import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditSendException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.DELETE;
-import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.SAVE;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.*;
 import static amaralus.apps.businesappdemo.infrastructure.audit.factory.EventFactory.Type.*;
 
 @Service
@@ -18,18 +20,39 @@ public class AuditService {
 
     private final LocalAuditContext localAuditContext;
     private final AuditLibraryServiceStub auditLibraryServiceStub;
+    private final AtomicBoolean catchExceptionsEnabled = new AtomicBoolean(true);
 
     public AuditService(LocalAuditContext localAuditContext, AuditLibraryServiceStub auditLibraryServiceStub) {
         this.localAuditContext = localAuditContext;
         this.auditLibraryServiceStub = auditLibraryServiceStub;
     }
 
+    public EventSender successEvent() {
+        return successEvent(SIMPLE);
+    }
+
     public EventSender successEvent(EventType eventType) {
         return new EventSender(true, eventType);
     }
 
+    public EventSender successEvent(SimpleAuditEvent simpleAuditEvent) {
+        return new EventSender(true, simpleAuditEvent);
+    }
+
+    public EventSender failEvent() {
+        return failEvent(SIMPLE);
+    }
+
     public EventSender failEvent(EventType eventType) {
         return new EventSender(false, eventType);
+    }
+
+    public EventSender failEvent(SimpleAuditEvent simpleAuditEvent) {
+        return new EventSender(false, simpleAuditEvent);
+    }
+
+    public void enableCatchExceptions(boolean enable) {
+        catchExceptionsEnabled.set(enable);
     }
 
     public class EventSender {
@@ -43,6 +66,12 @@ public class AuditService {
             this.eventData = new EventData();
             eventData.setSuccess(success);
             this.eventType = eventType;
+        }
+
+        private EventSender(boolean success, SimpleAuditEvent simpleAuditEvent) {
+            this(success, SIMPLE);
+            groupCode(simpleAuditEvent.getGroupCode());
+            eventCode(simpleAuditEvent.getEventCode());
         }
 
         public EventSender groupCode(String groupCode) {
@@ -75,20 +104,26 @@ public class AuditService {
                 prepareEvent();
                 if (event != null)
                     auditLibraryServiceStub.send(event);
+            } catch (AuditSendException e) {
+                if (catchExceptionsEnabled.get())
+                    log.error("Ошибка отправки собития аудита", e);
+                else
+                    // для прототипа сойдет, в конечной реализации кинем бизнес эксепшн
+                    throw new RuntimeException(e);
             } catch (Exception e) {
-                log.error("Ошибка во время отправки собития аудита", e);
+                log.error("Непредвиденная ошибка во время отправки события аудита", e);
             }
         }
 
         private void prepareEvent() {
-            if (eventType == SAVE || eventType == DELETE) {
+            if (eventType == SAVE_ENTITY || eventType == DELETE_ENTITY) {
                 if (eventData.getNewAuditEntity() == null) {
                     log.warn("Отсутствует аудируемая сущность");
                     return;
                 }
 
                 if (!localAuditContext.containsMetadata(eventData.getNewAuditEntity().getClass())) {
-                    log.warn("Нет метамодели для сущности [{}]", eventData.getNewAuditEntity().getClass().getName());
+                    log.warn("Нет метаданных для сущности [{}]", eventData.getNewAuditEntity().getClass().getName());
                     return;
                 }
                 var entityMetadata = localAuditContext.getMetadata(eventData.getNewAuditEntity().getClass());
@@ -100,9 +135,9 @@ public class AuditService {
 
         private EventFactory.Type getFactoryType() {
             switch (eventType) {
-                case SAVE:
+                case SAVE_ENTITY:
                     return eventData.getOldAuditEntity() == null ? CREATE_ENTITY_FACTORY : UPDATE_ENTITY_FACTORY;
-                case DELETE:
+                case DELETE_ENTITY:
                     return DELETE_ENTITY_FACTORY;
                 default:
                     return DEFAULT_ENTITY_FACTORY;

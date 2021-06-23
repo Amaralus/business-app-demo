@@ -12,6 +12,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static amaralus.apps.businesappdemo.infrastructure.audit.SimpleAuditEvent.EXAMPLE_EVENT;
+import static amaralus.apps.businesappdemo.infrastructure.audit.SimpleAuditEvent.EXAMPLE_EVENT_WITH_PARAMS;
+
 @Service
 @Slf4j
 public class AlphaCrudService implements CrudService<Alpha, String> {
@@ -33,6 +36,13 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     @Transactional
     @Override
     public Alpha save(Alpha alpha) {
+        auditService.successEvent(EXAMPLE_EVENT).send();
+
+        auditService.failEvent(EXAMPLE_EVENT_WITH_PARAMS)
+                .param(EXAMPLE_EVENT_WITH_PARAMS.firstParam(), "value1")
+                .param(EXAMPLE_EVENT_WITH_PARAMS.secondParam(), "value2")
+                .send();
+
         log.info("Сохранение Alpha code=[{}] version=[{}]", alpha.getCode(), alpha.getVersion() == null ? null : alpha.getVersion().getVersionValue());
         var model = mapper.alphaToModel(alpha);
         var old = getById(alpha.getCode());
@@ -44,7 +54,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
 
         var result = softSave(model);
         var saved = mapper.modelToAlpha(result.clearDeleted());
-        auditService.successEvent(EventType.SAVE)
+        auditService.successEvent(EventType.SAVE_ENTITY)
                 .entity(alpha, old)
                 .send();
         return saved;
@@ -77,7 +87,7 @@ public class AlphaCrudService implements CrudService<Alpha, String> {
     public void delete(String id) {
         log.info("Удаление Alpha code=[{}]", id);
         try {
-            auditService.successEvent(EventType.DELETE)
+            auditService.successEvent(EventType.DELETE_ENTITY)
                     .entity(getById(id))
                     .send();
             alphaRepository.deleteById(id);

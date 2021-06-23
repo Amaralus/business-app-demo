@@ -1,6 +1,7 @@
 package amaralus.apps.businesappdemo.infrastructure.audit;
 
 public enum EventType {
-    SAVE,
-    DELETE
+    SIMPLE,
+    SAVE_ENTITY,
+    DELETE_ENTITY
 }
