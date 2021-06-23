@@ -14,7 +14,8 @@ public class UpdateEntityEventFactory implements EventFactory {
         var auditLibraryEventBuilder = new AuditLibraryEventBuilder(
                 eventData.getEntityMetadata().getGroupCode(),
                 getEventCode("update", eventData.getEntityMetadata().getEntityClass()),
-                eventData.isSuccess());
+                eventData.isSuccess())
+                .fillAuditContextUUID(eventData.getAuditContextUuid().toString());
 
         var stateMachine = new StateMachine();
 

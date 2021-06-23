@@ -7,6 +7,7 @@ public class AuditLibraryEvent {
 
     private String groupCode;
     private String eventCode;
+    private String auditContextUUID;
     private boolean success;
 
     private final Map<String, String> params = new HashMap<>();
@@ -17,6 +18,7 @@ public class AuditLibraryEvent {
                 .append("groupCode: ").append(groupCode).append("\n")
                 .append("eventCode: ").append(eventCode).append("\n")
                 .append("success: ").append(success).append("\n")
+                .append("auditContextUUID: ").append(auditContextUUID).append("\n")
                 .append("params:\n");
 
         params.forEach((name, value) -> builder.append("    ").append(name).append(": ").append(value).append("\n"));
@@ -35,6 +37,11 @@ public class AuditLibraryEvent {
 
         public AuditLibraryEventBuilder param(String name, Object value) {
             event.params.put(name, value.toString());
+            return this;
+        }
+
+        public AuditLibraryEventBuilder fillAuditContextUUID(String auditContextUUID) {
+            event.auditContextUUID = auditContextUUID;
             return this;
         }
 

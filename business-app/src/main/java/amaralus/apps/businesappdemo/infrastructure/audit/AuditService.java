@@ -9,6 +9,7 @@ import amaralus.apps.businesappdemo.infrastructure.audit.stub.AuditSendException
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static amaralus.apps.businesappdemo.infrastructure.audit.EventType.*;
@@ -81,6 +82,11 @@ public class AuditService {
 
         public EventSender eventCode(String eventCode) {
             eventData.setEventCode(eventCode);
+            return this;
+        }
+
+        public EventSender contextUuid(UUID auditContextUUID) {
+            eventData.setAuditContextUuid(auditContextUUID);
             return this;
         }
 

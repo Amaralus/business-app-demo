@@ -71,7 +71,7 @@ public class AuditMetamodel implements IAuditMetaModel {
         try {
             if (log.isDebugEnabled()) {
                 var json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-                log.debug("Метамодель аудита в json формате:\n{}", json);
+                log.debug("Метамодель аудита в формате JSON:\n{}", json);
             }
         } catch (JsonProcessingException e) {
             log.warn("Неудалось отобразить метамодель аудита!", e);

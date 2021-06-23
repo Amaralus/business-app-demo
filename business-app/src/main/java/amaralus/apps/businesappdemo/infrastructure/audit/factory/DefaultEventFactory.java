@@ -9,8 +9,14 @@ public class DefaultEventFactory implements EventFactory {
 
     @Override
     public AuditLibraryEvent produce(EventData eventData) {
-        var auditLibraryEventBuilder = new AuditLibraryEventBuilder(eventData.getGroupCode(), eventData.getEventCode(), eventData.isSuccess());
+        var auditLibraryEventBuilder = new AuditLibraryEventBuilder(
+                eventData.getGroupCode(),
+                eventData.getEventCode(),
+                eventData.isSuccess())
+                .fillAuditContextUUID(eventData.getAuditContextUuid().toString());
+
         eventData.getParams().forEach(auditLibraryEventBuilder::param);
+
         return auditLibraryEventBuilder.build();
     }
 
