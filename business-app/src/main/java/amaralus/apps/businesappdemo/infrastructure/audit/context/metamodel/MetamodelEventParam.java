@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Map;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-@JsonInclude(NON_NULL)
+@JsonInclude(NON_EMPTY)
 public class MetamodelEventParam implements IAuditMetaModelEventParam {
 
     private final String code;

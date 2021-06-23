@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AuditEntity(groupCode = "ADMINISTRATION")
 public class AlphaVersion {
     @AuditId
-    @AuditParam(name = "Значение версии")
+    @AuditParam(name = "Значение версии", mandatory = true)
     private String versionValue;
     @AuditParam(name = "Обновляемое поле")
     private String updateField;

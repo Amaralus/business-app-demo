@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-@JsonInclude(NON_NULL)
+@JsonInclude(NON_EMPTY)
 public class MetamodelEventGroup implements IAuditMetaModelEventGroup {
 
     private final String code;

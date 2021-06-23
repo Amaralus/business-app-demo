@@ -1,5 +1,6 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.context.metamodel;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.SimpleAuditEvent;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.stub.metamodel.IAuditMetaModel;
@@ -33,6 +34,11 @@ public class AuditMetamodel implements IAuditMetaModel {
             group.addEvent(createEvent("delete", entityMetadata));
         }
 
+        for (var auditEvent : SimpleAuditEvent.values()) {
+            var group = groups.computeIfAbsent(auditEvent.getGroupCode(), MetamodelEventGroup::new);
+            group.addEvent(createEvent(auditEvent));
+        }
+
         return new ArrayList<>(groups.values());
     }
 
@@ -44,6 +50,15 @@ public class AuditMetamodel implements IAuditMetaModel {
         else
             for (var fieldMetadata : entityMetadata.getFieldsMetadata())
                 event.addParam(createParam(fieldMetadata));
+
+        return event;
+    }
+
+    private MetamodelEvent createEvent(SimpleAuditEvent auditEvent) {
+        var event = new MetamodelEvent(auditEvent.getEventCode());
+
+        for (var param : auditEvent.getParams())
+            event.addParam(new MetamodelEventParam(param, false));
 
         return event;
     }

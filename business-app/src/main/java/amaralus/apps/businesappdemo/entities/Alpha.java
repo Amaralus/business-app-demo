@@ -18,7 +18,7 @@ import java.util.Set;
 public class Alpha {
 
     @AuditId
-    @AuditParam(name = "Код")
+    @AuditParam(name = "Код", mandatory = true)
     private String code;
     @AuditParam(name = "Обновляемое поле")
     private String updateField;
