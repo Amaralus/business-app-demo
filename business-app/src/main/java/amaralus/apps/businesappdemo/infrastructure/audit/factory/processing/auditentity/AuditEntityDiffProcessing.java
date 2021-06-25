@@ -1,36 +1,38 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.auditentity;
 
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.AbstractCollectionProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectDiffProcessing;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 
-public class AuditEntityDiffProcessing extends AuditEntityProcessing {
+public class AuditEntityDiffProcessing extends AbstractEntityProcessing {
 
     private final Object oldEntity;
+    private final Object newEntity;
     private final FieldMetadata idField;
 
     private boolean deepDiff;
     private boolean idExtracted;
 
     public AuditEntityDiffProcessing(EntityMetadata entityMetadata, Object oldEntity, Object entity) {
-        super(entityMetadata, entity);
-        this.idField = entityMetadata.getIdFieldMetadata();
-        this.oldEntity = oldEntity;
+        this(entityMetadata, oldEntity, entity, entityMetadata.getWalkDepth());
     }
 
-    public AuditEntityDiffProcessing(EntityMetadata entityMetadata, int walkDepth, Object oldEntity, Object entity) {
-        super(entityMetadata, walkDepth, entity);
-        this.idField = entityMetadata.getIdFieldMetadata();
+    public AuditEntityDiffProcessing(EntityMetadata entityMetadata, Object oldEntity, Object newEntity, int walkDepth) {
+        super(entityMetadata.getFieldsMetadata()::iterator, walkDepth);
         this.oldEntity = oldEntity;
+        this.newEntity = newEntity;
+        this.idField = entityMetadata.getIdFieldMetadata();
     }
 
     @Override
     public void execute() {
-        if (oldEntity == null && entity == null) {
+        if (oldEntity == null && newEntity == null) {
             stateMachine.removeState();
             return;
-        } else if (oldEntity != null && entity != null)
+        } else if (oldEntity != null && newEntity != null)
             deepDiff = true;
 
         if (deepDiff)
@@ -46,7 +48,7 @@ public class AuditEntityDiffProcessing extends AuditEntityProcessing {
     private void extractId() {
         State state;
         if (oldEntity == null)
-            state = diffObjectStrategy(idField, null, entity);
+            state = diffObjectStrategy(idField, null, newEntity);
         else
             state = diffObjectStrategy(idField, oldEntity, null);
         stateMachine.addState(state);
@@ -54,27 +56,26 @@ public class AuditEntityDiffProcessing extends AuditEntityProcessing {
     }
 
     @Override
-    protected State objectStrategy(FieldMetadata fieldMetadata) {
-        return diffObjectStrategy(fieldMetadata, oldEntity, entity);
+    protected ObjectProcessing newObjectProcessing(FieldMetadata fieldMetadata) {
+        return diffObjectStrategy(fieldMetadata, oldEntity, newEntity);
     }
 
-    private ObjectDiffProcessing diffObjectStrategy(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
-        var strategy = new ObjectDiffProcessing(fieldMetadata, oldEntity, entity);
-        if (useParentNamePrefix)
-            strategy.setParamNamePrefix(paramNamePrefix);
-        return strategy;
+    private ObjectDiffProcessing diffObjectStrategy(FieldMetadata fieldMetadata, Object oldEntity, Object newEntity) {
+        return new ObjectDiffProcessing(fieldMetadata, oldEntity, newEntity);
     }
 
     @Override
-    protected State auditEntityStrategy(FieldMetadata fieldMetadata) {
-        var strategy = new AuditEntityDiffProcessing(
+    protected AbstractEntityProcessing newAuditEntityProcessing(FieldMetadata fieldMetadata) {
+        return new AuditEntityDiffProcessing(
                 fieldMetadata.getEntityMetadataLink(),
-                walkDepth - 1,
                 extractData(fieldMetadata, oldEntity),
-                extractData(fieldMetadata, entity));
+                extractData(fieldMetadata, newEntity),
+                walkDepth - 1);
+    }
 
-        strategy.setUseParentNamePrefix(true);
-        strategy.setParamNamePrefix(updateName(fieldMetadata.getParamName()));
-        return strategy;
+    // todo добавить потом дифф коллекций
+    @Override
+    protected AbstractCollectionProcessing<Object> newCollectionProcessing(FieldMetadata fieldMetadata) {
+        return null;
     }
 }

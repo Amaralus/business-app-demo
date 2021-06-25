@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public abstract class ProcessingStrategy extends State {
@@ -31,11 +30,12 @@ public abstract class ProcessingStrategy extends State {
         }
     }
 
-    protected String getDiff(Object oldValue, Object newValue) {
-        if (Objects.equals(oldValue, newValue))
-            return null;
-        else
-            return oldValue + " -> " + newValue;
+    protected String updateName(String name) {
+        return paramNamePrefix != null? paramNamePrefix + " | " + name : name;
+    }
+
+    protected Object wrapNull(Object object) {
+        return object == null ? "null": object;
     }
 
     protected void addParam(String name, Object value) {
@@ -48,14 +48,6 @@ public abstract class ProcessingStrategy extends State {
         var currentState = stateMachine.getCurrent();
         if (currentState != null)
             ((ProcessingStrategy) currentState).addParams(params);
-    }
-
-    protected String updateName(String name) {
-        return paramNamePrefix != null? paramNamePrefix + " | " + name : name;
-    }
-
-    protected Object wrapNull(Object object) {
-        return object == null ? "null": object;
     }
 
     public void addParams(Map<String , Object> params) {

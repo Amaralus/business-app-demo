@@ -1,15 +1,16 @@
 package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object;
 
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.DiffProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ObjectDiffProcessing extends ObjectProcessing {
+public class ObjectDiffProcessing extends ObjectProcessing implements DiffProcessing {
 
     private final Object oldEntity;
 
-    public ObjectDiffProcessing(FieldMetadata fieldMetadata, Object oldEntity, Object entity) {
-        super(fieldMetadata, entity);
+    public ObjectDiffProcessing(FieldMetadata fieldMetadata, Object oldEntity, Object newEntity) {
+        super(fieldMetadata, newEntity);
         this.oldEntity = oldEntity;
     }
 
