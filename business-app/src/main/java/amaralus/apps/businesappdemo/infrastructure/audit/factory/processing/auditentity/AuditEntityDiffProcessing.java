@@ -2,10 +2,13 @@ package amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.aud
 
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.State;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.AbstractCollectionProcessing;
+import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.collection.CollectionDiffProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectDiffProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.factory.processing.object.ObjectProcessing;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.EntityMetadata;
 import amaralus.apps.businesappdemo.infrastructure.audit.metadata.FieldMetadata;
+
+import java.util.Collection;
 
 public class AuditEntityDiffProcessing extends AbstractEntityProcessing {
 
@@ -75,7 +78,10 @@ public class AuditEntityDiffProcessing extends AbstractEntityProcessing {
 
     // todo добавить потом дифф коллекций
     @Override
-    protected AbstractCollectionProcessing<Object> newCollectionProcessing(FieldMetadata fieldMetadata) {
-        return null;
+    protected AbstractCollectionProcessing<?> newCollectionProcessing(FieldMetadata fieldMetadata) {
+        return new CollectionDiffProcessing(
+                fieldMetadata,
+                (Collection<Object>) extractData(fieldMetadata, oldEntity),
+                (Collection<Object>)extractData(fieldMetadata, newEntity));
     }
 }

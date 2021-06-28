@@ -12,7 +12,7 @@ public abstract class ProcessingStrategy extends State {
     protected Map<String, Object> params = new HashMap<>();
     protected String paramNamePrefix;
 
-    protected Object extractData(FieldMetadata fieldMetadata, Object targetObject) {
+    protected static Object extractData(FieldMetadata fieldMetadata, Object targetObject) {
         if (targetObject == null)
             return null;
 

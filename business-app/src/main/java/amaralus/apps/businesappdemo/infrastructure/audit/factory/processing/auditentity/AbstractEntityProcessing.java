@@ -58,7 +58,7 @@ public abstract class AbstractEntityProcessing extends IterableProcessing<FieldM
         return strategy;
     }
 
-    protected abstract AbstractCollectionProcessing<Object> newCollectionProcessing(FieldMetadata fieldMetadata);
+    protected abstract AbstractCollectionProcessing newCollectionProcessing(FieldMetadata fieldMetadata);
 
     public void setUseParentNamePrefix(boolean useParentNamePrefix) {
         this.useParentNamePrefix = useParentNamePrefix;
