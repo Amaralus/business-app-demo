@@ -25,6 +25,7 @@
         <postgresql.driver.version>42.2.14</postgresql.driver.version>
         <lombok.version>1.18.16</lombok.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <guava.version>30.1-jre</guava.version>
     </properties>
 
     <dependencyManagement>
@@ -87,6 +88,11 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
