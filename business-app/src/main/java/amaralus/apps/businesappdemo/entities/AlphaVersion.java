@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Pattern;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class AlphaVersion {
     @AuditId
     @AuditParam(name = "Значение версии", mandatory = true)
+    @Pattern(regexp = "^\\d{2}\\.\\d{2}$")
     private String versionValue;
     @AuditParam(name = "Обновляемое поле")
     private String updateField;

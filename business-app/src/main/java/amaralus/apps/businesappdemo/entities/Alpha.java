@@ -8,6 +8,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
@@ -19,11 +23,15 @@ public class Alpha {
 
     @AuditId
     @AuditParam(name = "Код", mandatory = true)
+    @NotBlank
     private String code;
     @AuditParam(name = "Обновляемое поле")
     private String updateField;
     @AuditParam(name = "Версия")
+    @NotNull
+    @Valid
     private AlphaVersion version;
     @AuditParam(name = "Набор тэт")
-    private Set<String> thetas;
+    @NotEmpty
+    private Set<@NotBlank String> thetas;
 }
