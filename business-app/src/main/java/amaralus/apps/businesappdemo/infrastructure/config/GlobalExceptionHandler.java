@@ -20,9 +20,9 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus
-    public ErrorResponse handleException(Exception e) throws Exception {
+    public ErrorResponse handleException(RuntimeException e) {
         if (e instanceof ResponseStatusException)
             throw e;
 
