@@ -8,7 +8,10 @@ import org.hibernate.annotations.LazyCollection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,9 +28,6 @@ public class UserModel implements UserDetails {
     @Id
     private String username;
     private String password;
-
-    @Transient
-    private String passwordConfirm;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
