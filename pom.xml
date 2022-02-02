@@ -22,7 +22,7 @@
         <java.version>11</java.version>
         <spring.boot.version>2.3.9.RELEASE</spring.boot.version>
         <spring.kafka.version>2.5.11.RELEASE</spring.kafka.version>
-        <postgresql.driver.version>42.2.14</postgresql.driver.version>
+        <postgresql.driver.version>42.3.1</postgresql.driver.version>
         <lombok.version>1.18.16</lombok.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <guava.version>30.1-jre</guava.version>
